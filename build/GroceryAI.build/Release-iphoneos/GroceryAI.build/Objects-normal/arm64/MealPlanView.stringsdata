@@ -1,0 +1,40 @@
+{
+  "source": "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/GroceryAI/Views/MealPlanView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Meal Plan",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 53
+        }
+      },
+      {
+        "comment": "",
+        "key": "Create Shopping List from Meal Plan",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 35
+        }
+      },
+      {
+        "comment": "",
+        "key": "Edit",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 81
+        }
+      },
+      {
+        "comment": "",
+        "key": "%@:",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 88
+        }
+      }
+    ]
+  },
+  "version": 1
+}

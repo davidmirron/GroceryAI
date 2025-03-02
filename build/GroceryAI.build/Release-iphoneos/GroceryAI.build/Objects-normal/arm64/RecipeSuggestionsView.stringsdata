@@ -1,0 +1,48 @@
+{
+  "source": "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/GroceryAI/Views/RecipeSuggestionsView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Recipe Suggestions",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 30
+        }
+      },
+      {
+        "comment": "",
+        "key": "No Recipes",
+        "location": {
+          "startingColumn": 31,
+          "startingLine": 11
+        }
+      },
+      {
+        "comment": "",
+        "key": "Add ingredients to your grocery list to get recipe suggestions",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 13
+        }
+      },
+      {
+        "comment": "",
+        "key": "You have all ingredients!",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 89
+        }
+      },
+      {
+        "comment": "",
+        "key": "Missing: %@",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 94
+        }
+      }
+    ]
+  },
+  "version": 1
+}

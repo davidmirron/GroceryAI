@@ -1,0 +1,120 @@
+{
+  "source": "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/GroceryAI/Views/AddItemView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Add Item",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 183
+        }
+      },
+      {
+        "comment": "",
+        "key": "Item name",
+        "location": {
+          "startingColumn": 35,
+          "startingLine": 39
+        }
+      },
+      {
+        "comment": "",
+        "key": "Unit",
+        "location": {
+          "startingColumn": 32,
+          "startingLine": 87
+        }
+      },
+      {
+        "comment": "",
+        "key": "Category",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 70
+        }
+      },
+      {
+        "comment": "",
+        "key": "Category",
+        "location": {
+          "startingColumn": 36,
+          "startingLine": 74
+        }
+      },
+      {
+        "comment": "",
+        "key": "grams",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 88
+        }
+      },
+      {
+        "comment": "",
+        "key": "pieces",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 89
+        }
+      },
+      {
+        "comment": "",
+        "key": "liters",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 90
+        }
+      },
+      {
+        "comment": "",
+        "key": "cups",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 91
+        }
+      },
+      {
+        "comment": "",
+        "key": "Notes (Optional)",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 121
+        }
+      },
+      {
+        "comment": "",
+        "key": "Notes",
+        "location": {
+          "startingColumn": 39,
+          "startingLine": 125
+        }
+      },
+      {
+        "comment": "",
+        "key": "Recently Added",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 132
+        }
+      },
+      {
+        "comment": "",
+        "key": "Add to List",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 169
+        }
+      },
+      {
+        "comment": "",
+        "key": "Cancel",
+        "location": {
+          "startingColumn": 28,
+          "startingLine": 187
+        }
+      }
+    ]
+  },
+  "version": 1
+}

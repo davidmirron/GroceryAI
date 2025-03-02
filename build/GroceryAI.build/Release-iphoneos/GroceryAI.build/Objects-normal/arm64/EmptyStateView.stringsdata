@@ -1,0 +1,24 @@
+{
+  "source": "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/GroceryAI/Views/Components/EmptyStateView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "No items in %@",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 13
+        }
+      },
+      {
+        "comment": "",
+        "key": "Add items with the + button below",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 17
+        }
+      }
+    ]
+  },
+  "version": 1
+}

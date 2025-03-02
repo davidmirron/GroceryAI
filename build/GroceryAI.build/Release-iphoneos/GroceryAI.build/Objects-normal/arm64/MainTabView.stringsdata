@@ -1,0 +1,64 @@
+{
+  "source": "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/GroceryAI/Views/MainTabView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "List",
+        "location": {
+          "startingColumn": 23,
+          "startingLine": 13
+        }
+      },
+      {
+        "comment": "",
+        "key": "Recipes",
+        "location": {
+          "startingColumn": 23,
+          "startingLine": 21
+        }
+      },
+      {
+        "comment": "",
+        "key": "Meal Plan",
+        "location": {
+          "startingColumn": 23,
+          "startingLine": 29
+        }
+      },
+      {
+        "comment": "",
+        "key": "Tips",
+        "location": {
+          "startingColumn": 23,
+          "startingLine": 37
+        }
+      },
+      {
+        "comment": "",
+        "key": "Shopping Tips",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 136
+        }
+      },
+      {
+        "comment": "",
+        "key": "Shopping Tips",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 59
+        }
+      },
+      {
+        "comment": "",
+        "key": "Seasonal Tips",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 124
+        }
+      }
+    ]
+  },
+  "version": 1
+}

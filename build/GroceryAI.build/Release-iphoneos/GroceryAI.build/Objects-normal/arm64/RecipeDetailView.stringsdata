@@ -1,0 +1,80 @@
+{
+  "source": "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/GroceryAI/Views/RecipeDetailView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Added to Shopping List",
+        "location": {
+          "startingColumn": 16,
+          "startingLine": 31
+        }
+      },
+      {
+        "comment": "",
+        "key": "OK",
+        "location": {
+          "startingColumn": 20,
+          "startingLine": 32
+        }
+      },
+      {
+        "comment": "",
+        "key": "🍲",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 57
+        }
+      },
+      {
+        "comment": "",
+        "key": "Ingredients",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 76
+        }
+      },
+      {
+        "comment": "",
+        "key": "Instructions",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 90
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 104
+        }
+      },
+      {
+        "comment": "",
+        "key": "Add to List",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 124
+        }
+      },
+      {
+        "comment": "",
+        "key": "•",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 156
+        }
+      },
+      {
+        "comment": "",
+        "key": "%@ %@ %@",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 164
+        }
+      }
+    ]
+  },
+  "version": 1
+}

@@ -1,0 +1,245 @@
+{
+  "" : {
+    "const-values" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/GroceryAI-master.swiftconstvalues",
+    "dependencies" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/GroceryAI-master.d",
+    "diagnostics" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/GroceryAI-master.dia",
+    "emit-module-dependencies" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/GroceryAI-master-emit-module.d",
+    "emit-module-diagnostics" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/GroceryAI-master-emit-module.dia",
+    "swift-dependencies" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/GroceryAI-master.swiftdeps"
+  },
+  "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/GroceryAI/ContentView.swift" : {
+    "index-unit-output-path" : "/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/ContentView.o",
+    "llvm-bc" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/ContentView.bc",
+    "object" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/ContentView.o"
+  },
+  "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/GroceryAI/GroceryAIApp.swift" : {
+    "index-unit-output-path" : "/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/GroceryAIApp.o",
+    "llvm-bc" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/GroceryAIApp.bc",
+    "object" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/GroceryAIApp.o"
+  },
+  "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/GroceryAI/Models/AIResponse.swift" : {
+    "index-unit-output-path" : "/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/AIResponse.o",
+    "llvm-bc" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/AIResponse.bc",
+    "object" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/AIResponse.o"
+  },
+  "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/GroceryAI/Models/DietaryTag.swift" : {
+    "index-unit-output-path" : "/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/DietaryTag.o",
+    "llvm-bc" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/DietaryTag.bc",
+    "object" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/DietaryTag.o"
+  },
+  "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/GroceryAI/Models/GroceryItem.swift" : {
+    "index-unit-output-path" : "/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/GroceryItem.o",
+    "llvm-bc" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/GroceryItem.bc",
+    "object" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/GroceryItem.o"
+  },
+  "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/GroceryAI/Models/Ingredient.swift" : {
+    "index-unit-output-path" : "/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/Ingredient.o",
+    "llvm-bc" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/Ingredient.bc",
+    "object" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/Ingredient.o"
+  },
+  "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/GroceryAI/Models/MealPlan.swift" : {
+    "index-unit-output-path" : "/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/MealPlan.o",
+    "llvm-bc" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/MealPlan.bc",
+    "object" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/MealPlan.o"
+  },
+  "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/GroceryAI/Models/NutritionalInfo.swift" : {
+    "index-unit-output-path" : "/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/NutritionalInfo.o",
+    "llvm-bc" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/NutritionalInfo.bc",
+    "object" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/NutritionalInfo.o"
+  },
+  "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/GroceryAI/Models/PredictedItem.swift" : {
+    "index-unit-output-path" : "/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/PredictedItem.o",
+    "llvm-bc" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/PredictedItem.bc",
+    "object" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/PredictedItem.o"
+  },
+  "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/GroceryAI/Models/Recipe.swift" : {
+    "index-unit-output-path" : "/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/Recipe.o",
+    "llvm-bc" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/Recipe.bc",
+    "object" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/Recipe.o"
+  },
+  "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/GroceryAI/Models/ShoppingListItem.swift" : {
+    "index-unit-output-path" : "/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/ShoppingListItem.o",
+    "llvm-bc" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/ShoppingListItem.bc",
+    "object" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/ShoppingListItem.o"
+  },
+  "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/GroceryAI/Models/Unit.swift" : {
+    "index-unit-output-path" : "/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/Unit.o",
+    "llvm-bc" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/Unit.bc",
+    "object" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/Unit.o"
+  },
+  "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/GroceryAI/Models/UnitType.swift" : {
+    "index-unit-output-path" : "/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/UnitType.o",
+    "llvm-bc" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/UnitType.bc",
+    "object" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/UnitType.o"
+  },
+  "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/GroceryAI/Models/User.swift" : {
+    "index-unit-output-path" : "/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/User.o",
+    "llvm-bc" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/User.bc",
+    "object" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/User.o"
+  },
+  "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/GroceryAI/Services/DietaryPatternAnalyzer.swift" : {
+    "index-unit-output-path" : "/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/DietaryPatternAnalyzer.o",
+    "llvm-bc" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/DietaryPatternAnalyzer.bc",
+    "object" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/DietaryPatternAnalyzer.o"
+  },
+  "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/GroceryAI/Services/IngredientMatcher.swift" : {
+    "index-unit-output-path" : "/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/IngredientMatcher.o",
+    "llvm-bc" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/IngredientMatcher.bc",
+    "object" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/IngredientMatcher.o"
+  },
+  "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/GroceryAI/Services/MealPlanningAssistant.swift" : {
+    "index-unit-output-path" : "/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/MealPlanningAssistant.o",
+    "llvm-bc" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/MealPlanningAssistant.bc",
+    "object" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/MealPlanningAssistant.o"
+  },
+  "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/GroceryAI/Services/NaturalLanguageParser.swift" : {
+    "index-unit-output-path" : "/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/NaturalLanguageParser.o",
+    "llvm-bc" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/NaturalLanguageParser.bc",
+    "object" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/NaturalLanguageParser.o"
+  },
+  "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/GroceryAI/Services/RestockSuggestionService.swift" : {
+    "index-unit-output-path" : "/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/RestockSuggestionService.o",
+    "llvm-bc" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/RestockSuggestionService.bc",
+    "object" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/RestockSuggestionService.o"
+  },
+  "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/GroceryAI/Theme/AppTheme.swift" : {
+    "index-unit-output-path" : "/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/AppTheme.o",
+    "llvm-bc" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/AppTheme.bc",
+    "object" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/AppTheme.o"
+  },
+  "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/GroceryAI/Theme/Color+Theme.swift" : {
+    "index-unit-output-path" : "/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/Color+Theme.o",
+    "llvm-bc" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/Color+Theme.bc",
+    "object" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/Color+Theme.o"
+  },
+  "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/GroceryAI/Theme/ViewModifiers.swift" : {
+    "index-unit-output-path" : "/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/ViewModifiers.o",
+    "llvm-bc" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/ViewModifiers.bc",
+    "object" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/ViewModifiers.o"
+  },
+  "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/GroceryAI/Utilities/QuantityManager.swift" : {
+    "index-unit-output-path" : "/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/QuantityManager.o",
+    "llvm-bc" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/QuantityManager.bc",
+    "object" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/QuantityManager.o"
+  },
+  "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/GroceryAI/ViewModels/GroceryViewModel.swift" : {
+    "index-unit-output-path" : "/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/GroceryViewModel.o",
+    "llvm-bc" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/GroceryViewModel.bc",
+    "object" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/GroceryViewModel.o"
+  },
+  "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/GroceryAI/ViewModels/RecipesViewModel.swift" : {
+    "index-unit-output-path" : "/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/RecipesViewModel.o",
+    "llvm-bc" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/RecipesViewModel.bc",
+    "object" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/RecipesViewModel.o"
+  },
+  "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/GroceryAI/ViewModels/ShoppingListViewModel.swift" : {
+    "index-unit-output-path" : "/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/ShoppingListViewModel.o",
+    "llvm-bc" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/ShoppingListViewModel.bc",
+    "object" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/ShoppingListViewModel.o"
+  },
+  "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/GroceryAI/Views/AddItemView.swift" : {
+    "index-unit-output-path" : "/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/AddItemView.o",
+    "llvm-bc" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/AddItemView.bc",
+    "object" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/AddItemView.o"
+  },
+  "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/GroceryAI/Views/Components/CardView.swift" : {
+    "index-unit-output-path" : "/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/CardView.o",
+    "llvm-bc" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/CardView.bc",
+    "object" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/CardView.o"
+  },
+  "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/GroceryAI/Views/Components/CategoryButton.swift" : {
+    "index-unit-output-path" : "/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/CategoryButton.o",
+    "llvm-bc" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/CategoryButton.bc",
+    "object" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/CategoryButton.o"
+  },
+  "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/GroceryAI/Views/Components/CategoryHeader.swift" : {
+    "index-unit-output-path" : "/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/CategoryHeader.o",
+    "llvm-bc" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/CategoryHeader.bc",
+    "object" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/CategoryHeader.o"
+  },
+  "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/GroceryAI/Views/Components/DarkModeTextField.swift" : {
+    "index-unit-output-path" : "/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/DarkModeTextField.o",
+    "llvm-bc" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/DarkModeTextField.bc",
+    "object" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/DarkModeTextField.o"
+  },
+  "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/GroceryAI/Views/Components/EmptyStateView.swift" : {
+    "index-unit-output-path" : "/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/EmptyStateView.o",
+    "llvm-bc" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/EmptyStateView.bc",
+    "object" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/EmptyStateView.o"
+  },
+  "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/GroceryAI/Views/Components/GroceryListItem.swift" : {
+    "index-unit-output-path" : "/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/GroceryListItem.o",
+    "llvm-bc" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/GroceryListItem.bc",
+    "object" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/GroceryListItem.o"
+  },
+  "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/GroceryAI/Views/Components/HeaderView.swift" : {
+    "index-unit-output-path" : "/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/HeaderView.o",
+    "llvm-bc" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/HeaderView.bc",
+    "object" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/HeaderView.o"
+  },
+  "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/GroceryAI/Views/Components/QuantityControlStyle.swift" : {
+    "index-unit-output-path" : "/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/QuantityControlStyle.o",
+    "llvm-bc" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/QuantityControlStyle.bc",
+    "object" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/QuantityControlStyle.o"
+  },
+  "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/GroceryAI/Views/Components/SuggestionChip.swift" : {
+    "index-unit-output-path" : "/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/SuggestionChip.o",
+    "llvm-bc" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/SuggestionChip.bc",
+    "object" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/SuggestionChip.o"
+  },
+  "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/GroceryAI/Views/IngredientPickerView.swift" : {
+    "index-unit-output-path" : "/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/IngredientPickerView.o",
+    "llvm-bc" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/IngredientPickerView.bc",
+    "object" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/IngredientPickerView.o"
+  },
+  "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/GroceryAI/Views/IngredientsListView.swift" : {
+    "index-unit-output-path" : "/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/IngredientsListView.o",
+    "llvm-bc" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/IngredientsListView.bc",
+    "object" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/IngredientsListView.o"
+  },
+  "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/GroceryAI/Views/MainTabView.swift" : {
+    "index-unit-output-path" : "/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/MainTabView.o",
+    "llvm-bc" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/MainTabView.bc",
+    "object" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/MainTabView.o"
+  },
+  "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/GroceryAI/Views/MealPlanView.swift" : {
+    "index-unit-output-path" : "/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/MealPlanView.o",
+    "llvm-bc" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/MealPlanView.bc",
+    "object" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/MealPlanView.o"
+  },
+  "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/GroceryAI/Views/OnboardingView.swift" : {
+    "index-unit-output-path" : "/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/OnboardingView.o",
+    "llvm-bc" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/OnboardingView.bc",
+    "object" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/OnboardingView.o"
+  },
+  "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/GroceryAI/Views/RecipeDetailView.swift" : {
+    "index-unit-output-path" : "/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/RecipeDetailView.o",
+    "llvm-bc" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/RecipeDetailView.bc",
+    "object" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/RecipeDetailView.o"
+  },
+  "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/GroceryAI/Views/RecipeList.swift" : {
+    "index-unit-output-path" : "/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/RecipeList.o",
+    "llvm-bc" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/RecipeList.bc",
+    "object" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/RecipeList.o"
+  },
+  "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/GroceryAI/Views/RecipeSuggestionsView.swift" : {
+    "index-unit-output-path" : "/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/RecipeSuggestionsView.o",
+    "llvm-bc" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/RecipeSuggestionsView.bc",
+    "object" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/RecipeSuggestionsView.o"
+  },
+  "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/GroceryAI/Views/RecipesView.swift" : {
+    "index-unit-output-path" : "/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/RecipesView.o",
+    "llvm-bc" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/RecipesView.bc",
+    "object" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/RecipesView.o"
+  },
+  "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/GroceryAI/Views/ShoppingListView.swift" : {
+    "index-unit-output-path" : "/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/ShoppingListView.o",
+    "llvm-bc" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/ShoppingListView.bc",
+    "object" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/ShoppingListView.o"
+  },
+  "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/DerivedSources/GeneratedAssetSymbols.swift" : {
+    "index-unit-output-path" : "/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/GeneratedAssetSymbols.o",
+    "llvm-bc" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/GeneratedAssetSymbols.bc",
+    "object" : "/Users/davidmiron/Desktop/GroceryAI/GroceryAI/build/GroceryAI.build/Release-iphoneos/GroceryAI.build/Objects-normal/arm64/GeneratedAssetSymbols.o"
+  }
+}
