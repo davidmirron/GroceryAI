@@ -7,7 +7,7 @@ struct AddItemView: View {
     @State private var itemName = ""
     @State private var selectedCategory: IngredientCategory = .other
     @State private var amount: Double = 1.0
-    @State private var unit: Ingredient.Unit = .grams
+    @State private var unit: IngredientUnit = .grams
     @State private var notes = ""
     
     // Quick add items
@@ -37,7 +37,7 @@ struct AddItemView: View {
                     VStack(spacing: 20) {
                         // Item name field
                         TextField("Item name", text: $itemName)
-                            .onChange(of: itemName) { _ in
+                            .onChange(of: itemName) { oldValue, newValue in
                                 updateUnitBasedOnItem()
                             }
                             .modifier(DarkModeTextFieldModifier())
@@ -50,7 +50,7 @@ struct AddItemView: View {
                                     Button(action: {
                                         itemName = item
                                         selectedCategory = determineCategory(from: item)
-                                        // Use Ingredient.Unit directly
+                                        // Use IngredientUnit directly
                                         unit = suggestUnitForItem(item)
                                         amount = suggestAmountForItem(item)
                                     }) {
@@ -76,19 +76,19 @@ struct AddItemView: View {
                                     Text(category.rawValue).tag(category)
                                 }
                             }
-                            .onChange(of: selectedCategory) { _ in
+                            .onChange(of: selectedCategory) { oldValue, newValue in
                                 updateUnitBasedOnItem()
                             }
                             .pickerStyle(SegmentedPickerStyle())
                             .padding(.vertical, 8)
                         }
                         
-                        // Unit picker - simplified to use Ingredient.Unit directly
+                        // Unit picker - simplified to use IngredientUnit directly
                         Picker("Unit", selection: $unit) {
-                            Text("grams").tag(Ingredient.Unit.grams)
-                            Text("pieces").tag(Ingredient.Unit.pieces)
-                            Text("liters").tag(Ingredient.Unit.liters)
-                            Text("cups").tag(Ingredient.Unit.cups)
+                            Text("grams").tag(IngredientUnit.grams)
+                            Text("pieces").tag(IngredientUnit.pieces)
+                            Text("liters").tag(IngredientUnit.liters)
+                            Text("cups").tag(IngredientUnit.cups)
                         }
                         .pickerStyle(SegmentedPickerStyle())
                         
@@ -244,7 +244,7 @@ struct AddItemView: View {
     }
     
     // Simplified unit suggestion
-    private func suggestUnitForItem(_ item: String) -> Ingredient.Unit {
+    private func suggestUnitForItem(_ item: String) -> IngredientUnit {
         let lowerItem = item.lowercased()
         
         if ["milk", "water", "juice", "oil"].contains(where: { lowerItem.contains($0) }) {

@@ -99,7 +99,7 @@ class RecipesViewModel: ObservableObject {
             
             // For each recipe, check which ingredients are missing based on the shopping list
             for recipe in self.allRecipes {
-                var recipeCopy = recipe
+                let recipeCopy = recipe
                 var missingIngredients: [Ingredient] = []
                 
                 // Check each recipe ingredient against the provided shopping list

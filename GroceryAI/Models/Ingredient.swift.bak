@@ -4,17 +4,24 @@ struct Ingredient: Identifiable, Codable {
     let id: UUID
     var name: String
     var amount: Double
-    var unit: IngredientUnit
+    var unit: Unit
     var category: IngredientCategory
     var isPerishable: Bool
-    var typicalShelfLife: Int? // in days
+    var typicalShelfLife: Int?
     var notes: String?
     var customOrder: Int?
+    
+    enum Unit: String, Codable {
+        case grams = "g"
+        case liters = "L"
+        case pieces = "pcs"
+        case cups = "cups"
+    }
     
     init(id: UUID = UUID(), 
          name: String, 
          amount: Double, 
-         unit: IngredientUnit, 
+         unit: Unit, 
          category: IngredientCategory = .other,
          isPerishable: Bool = false,
          typicalShelfLife: Int? = nil,
@@ -32,28 +39,11 @@ struct Ingredient: Identifiable, Codable {
     }
 }
 
-enum IngredientUnit: String, Codable, CaseIterable {
-    case pieces = "pcs"
-    case grams = "g"
-    case kilograms = "kg"
-    case milliliters = "ml"
-    case liters = "L"
-    case cups = "cups"
-    case tablespoons = "tbsp"
-    case teaspoons = "tsp"
-    case pounds = "lbs"
-    case ounces = "oz"
-    case units = "units"
-}
-
 enum IngredientCategory: String, Codable, CaseIterable {
     case dairy = "Dairy"
     case produce = "Produce"
     case pantry = "Pantry"
     case meat = "Meat & Seafood"
     case frozen = "Frozen"
-    case bakery = "Bakery"
-    case seafood = "Seafood" 
-    case beverages = "Beverages"
     case other = "Other"
 } 

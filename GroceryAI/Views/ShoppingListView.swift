@@ -191,9 +191,6 @@ struct ShoppingListView: View {
                 
                 // Wrap ForEach in a drag-and-drop context
                 ForEach(items) { item in
-                    // Get binding to the actual Ingredient
-                    let binding = viewModel.bindingForItem(item)
-                    
                     // Item row with binding
                     GroceryItemRow(
                         item: item,

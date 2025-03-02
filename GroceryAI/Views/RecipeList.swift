@@ -154,7 +154,7 @@ struct RecipeFormView: View {
                                     ingredients[index] = updated
                                 }
                             )) {
-                                ForEach([Ingredient.Unit.pieces, .grams, .liters, .cups], id: \.self) { unit in
+                                ForEach([IngredientUnit.pieces, .grams, .liters, .cups], id: \.self) { unit in
                                     Text(unit.rawValue).tag(unit)
                                 }
                             }
@@ -249,12 +249,10 @@ func createSheetBasedRecipeList(recipes: [Recipe]) -> some View {
     // Use reflection to set the recipes directly to avoid StateObject recreation
     let mirror = Mirror(reflecting: view.recipeListViewModel)
     if let recipesProperty = mirror.children.first(where: { $0.label == "_recipes" }) {
-        if let recipesStorage = recipesProperty.value as? Published<[Recipe]>.Publisher {
-            // This is a workaround since we can't directly modify the StateObject
-            let viewModel = RecipeListViewModel()
-            viewModel.recipes = recipes
-            view = RecipeListView(recipeListViewModel: viewModel)
-        }
+        // This is a workaround since we can't directly modify the StateObject
+        let viewModel = RecipeListViewModel()
+        viewModel.recipes = recipes
+        view = RecipeListView(recipeListViewModel: viewModel)
     }
     view.presentationMode = .sheet
     return view
