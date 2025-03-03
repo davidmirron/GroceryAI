@@ -5,6 +5,7 @@ class ShoppingListViewModel: ObservableObject {
     @Published var items: [Ingredient] = []
     @Published var selectedItems: Set<UUID> = []
     @Published var favoriteItems: Set<UUID> = []
+    @Published var lastDeletedItem: (Ingredient, Int)? = nil
     
     init() {
         loadItems()
@@ -52,6 +53,9 @@ class ShoppingListViewModel: ObservableObject {
     
     func deleteItem(_ item: Ingredient) {
         if let index = items.firstIndex(where: { $0.id == item.id }) {
+            // Store the deleted item and its index for potential undo
+            lastDeletedItem = (item, index)
+            
             items.remove(at: index)
         }
         if selectedItems.contains(item.id) {
@@ -63,6 +67,56 @@ class ShoppingListViewModel: ObservableObject {
         saveItems()
         saveSelectedItems()
         saveFavoriteItems()
+    }
+    
+    func undoDelete() {
+        guard let (item, index) = lastDeletedItem else { return }
+        
+        // Insert the item back at its original position
+        if index <= items.count {
+            items.insert(item, at: index)
+        } else {
+            items.append(item)
+        }
+        
+        // Restore favorite status if it was a favorite
+        if favoriteItems.contains(item.id) {
+            favoriteItems.insert(item.id)
+        }
+        
+        // Clear the last deleted item
+        lastDeletedItem = nil
+        
+        // Save changes
+        saveItems()
+        saveFavoriteItems()
+        
+        // Add haptic feedback
+        let generator = UINotificationFeedbackGenerator()
+        generator.notificationOccurred(.success)
+    }
+    
+    func canUndo() -> Bool {
+        lastDeletedItem != nil
+    }
+    
+    func clearCompletedItems() {
+        // Get all completed items
+        let completedItemIds = selectedItems
+        
+        // Remove them from the items array
+        items.removeAll { completedItemIds.contains($0.id) }
+        
+        // Clear the selected items set
+        selectedItems.removeAll()
+        
+        // Save changes
+        saveItems()
+        saveSelectedItems()
+        
+        // Add haptic feedback
+        let generator = UINotificationFeedbackGenerator()
+        generator.notificationOccurred(.success)
     }
     
     func toggleFavorite(_ item: Ingredient) {
@@ -262,5 +316,29 @@ class ShoppingListViewModel: ObservableObject {
         return categoryItems.sorted { 
             ($0.customOrder ?? Int.max) < ($1.customOrder ?? Int.max) 
         }
+    }
+    
+    func deleteItems(withIds ids: Set<UUID>) {
+        // Store the deleted items and their indices for potential undo
+        let deletedItems = items.enumerated().filter { ids.contains($0.element.id) }
+        if let firstDeleted = deletedItems.first {
+            lastDeletedItem = (firstDeleted.element, firstDeleted.offset)
+        }
+        
+        // Remove the items
+        items.removeAll { ids.contains($0.id) }
+        
+        // Remove from selected and favorite sets
+        selectedItems.subtract(ids)
+        favoriteItems.subtract(ids)
+        
+        // Save changes
+        saveItems()
+        saveSelectedItems()
+        saveFavoriteItems()
+        
+        // Add haptic feedback
+        let generator = UINotificationFeedbackGenerator()
+        generator.notificationOccurred(.success)
     }
 }

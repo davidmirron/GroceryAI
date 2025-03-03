@@ -246,14 +246,10 @@ class RecipeListViewModel: ObservableObject {
 // and provides the same functionality but uses the consolidated RecipeListView
 func createSheetBasedRecipeList(recipes: [Recipe]) -> some View {
     var view = RecipeListView()
-    // Use reflection to set the recipes directly to avoid StateObject recreation
-    let mirror = Mirror(reflecting: view.recipeListViewModel)
-    if let recipesProperty = mirror.children.first(where: { $0.label == "_recipes" }) {
-        // This is a workaround since we can't directly modify the StateObject
-        let viewModel = RecipeListViewModel()
-        viewModel.recipes = recipes
-        view = RecipeListView(recipeListViewModel: viewModel)
-    }
+    // Create a new view model with the provided recipes
+    let viewModel = RecipeListViewModel()
+    viewModel.recipes = recipes
+    view = RecipeListView(recipeListViewModel: viewModel)
     view.presentationMode = .sheet
     return view
 }

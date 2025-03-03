@@ -5,6 +5,8 @@ struct ShoppingListView: View {
     @StateObject private var viewModel = ShoppingListViewModel()
     @State private var searchText = ""
     @State private var showingAddItem = false
+    @State private var editMode: EditMode = .inactive
+    @State private var selectedItems = Set<UUID>()
     
     // Quick add items
     let quickAddItems = ["Milk", "Eggs", "Bread", "Bananas"]
@@ -20,42 +22,54 @@ struct ShoppingListView: View {
                 
                 VStack(spacing: 0) {
                     // Quick add buttons
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 12) {
-                            ForEach(quickAddItems, id: \.self) { itemName in
-                                Button {
-                                    addQuickItem(name: itemName)
-                                } label: {
-                                    Text(itemName)
-                                        .font(.system(size: 16))
-                                        .foregroundColor(AppTheme.primary)
+                    if editMode == .inactive {
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: 12) {
+                                // Show undo button if there's a deleted item
+                                if viewModel.canUndo() {
+                                    Button {
+                                        withAnimation {
+                                            viewModel.undoDelete()
+                                        }
+                                    } label: {
+                                        HStack(spacing: 6) {
+                                            Image(systemName: "arrow.uturn.backward")
+                                                .font(.system(size: 14))
+                                            Text("Undo")
+                                                .font(.system(size: 14))
+                                        }
+                                        .foregroundColor(AppTheme.secondary)
+                                        .padding(.horizontal, 12)
+                                        .padding(.vertical, 6)
+                                        .background(AppTheme.secondaryLight.opacity(0.2))
+                                        .clipShape(Capsule())
+                                    }
+                                    .transition(.scale.combined(with: .opacity))
+                                }
+                                
+                                ForEach(quickAddItems, id: \.self) { itemName in
+                                    Button {
+                                        addQuickItem(name: itemName)
+                                    } label: {
+                                        HStack(spacing: 6) {
+                                            Text(itemName)
+                                                .font(.system(size: 16))
+                                                .foregroundColor(AppTheme.primary)
+                                            
+                                            Image(systemName: "plus.circle.fill")
+                                                .font(.system(size: 16))
+                                                .foregroundColor(AppTheme.primary)
+                                        }
                                         .padding(.horizontal, 16)
                                         .padding(.vertical, 8)
-                                        .background(AppTheme.primaryLight)
+                                        .background(AppTheme.primaryLight.opacity(0.2))
                                         .clipShape(Capsule())
-                                        .overlay(
-                                            Capsule()
-                                                .stroke(AppTheme.primary.opacity(0.2), lineWidth: 1)
-                                        )
+                                    }
                                 }
                             }
-                            
-                            NavigationLink(destination: RecipesView(ingredients: viewModel.items)) {
-                                Text("What can I make?")
-                                    .font(.system(size: 16))
-                                    .foregroundColor(AppTheme.secondary)
-                                    .padding(.horizontal, 16)
-                                    .padding(.vertical, 8)
-                                    .background(AppTheme.secondaryLight)
-                                    .clipShape(Capsule())
-                                    .overlay(
-                                        Capsule()
-                                            .stroke(AppTheme.secondary.opacity(0.2), lineWidth: 1)
-                                    )
-                            }
+                            .padding(.horizontal, 16)
+                            .padding(.top, 16)
                         }
-                        .padding(.horizontal, 16)
-                        .padding(.top, 16)
                     }
                     
                     // Category-based list with drag to reorder
@@ -89,27 +103,29 @@ struct ShoppingListView: View {
                     }
                 }
                 
-                // Add button
-                VStack {
-                    Spacer()
-                    HStack {
+                // Add button (only show when not in edit mode)
+                if editMode == .inactive {
+                    VStack {
                         Spacer()
-                        Button {
-                            showingAddItem = true
-                        } label: {
-                            ZStack {
-                                Circle()
-                                    .fill(AppTheme.primaryGradient)
-                                    .frame(width: 60, height: 60)
-                                    .shadow(color: AppTheme.primary.opacity(0.3), radius: 5, x: 0, y: 3)
-                                
-                                Text("+")
-                                    .font(.system(size: 30, weight: .medium))
-                                    .foregroundColor(.white)
+                        HStack {
+                            Spacer()
+                            Button {
+                                showingAddItem = true
+                            } label: {
+                                ZStack {
+                                    Circle()
+                                        .fill(AppTheme.primary)
+                                        .frame(width: 60, height: 60)
+                                        .shadow(color: AppTheme.primary.opacity(0.3), radius: 5, x: 0, y: 3)
+                                    
+                                    Text("+")
+                                        .font(.system(size: 30, weight: .medium))
+                                        .foregroundColor(.white)
+                                }
                             }
+                            .padding(.trailing, 20)
+                            .padding(.bottom, 80)
                         }
-                        .padding(.trailing, 20)
-                        .padding(.bottom, 80)
                     }
                 }
             }
@@ -122,8 +138,31 @@ struct ShoppingListView: View {
                         .foregroundColor(.white)
                 }
                 
+                ToolbarItem(placement: .topBarLeading) {
+                    EditButton()
+                        .foregroundColor(.white)
+                }
+                
                 ToolbarItem(placement: .topBarTrailing) {
                     Menu {
+                        if editMode == .active {
+                            Button(role: .destructive) {
+                                // Delete selected items
+                                viewModel.deleteItems(withIds: selectedItems)
+                                selectedItems.removeAll()
+                                editMode = .inactive
+                            } label: {
+                                Label("Delete Selected", systemImage: "trash")
+                            }
+                        }
+                        
+                        Button {
+                            // Clear completed items
+                            viewModel.clearCompletedItems()
+                        } label: {
+                            Label("Clear Completed", systemImage: "trash")
+                        }
+                        
                         Button {
                             // Refresh action
                             viewModel.loadItems()
@@ -131,7 +170,7 @@ struct ShoppingListView: View {
                             Label("Refresh", systemImage: "arrow.clockwise")
                         }
                         
-                    Button {
+                        Button {
                             shareList()
                         } label: {
                             Label("Share List", systemImage: "square.and.arrow.up")
@@ -154,6 +193,7 @@ struct ShoppingListView: View {
             .sheet(isPresented: $showingAddItem) {
                 AddItemView(viewModel: viewModel)
             }
+            .environment(\.editMode, $editMode)
         }
     }
     
@@ -169,35 +209,67 @@ struct ShoppingListView: View {
         
         return AnyView(
             VStack(alignment: .leading, spacing: 8) {
-                // Make the header button tappable to select the category
-                Button(action: {
-                    withAnimation {
-                        selectedCategory = category
-                    }
-                }) {
-                    Text(title)
-                        .font(.headline)
+                // Category header with count
+                HStack {
+                    Button(action: {
+                        withAnimation {
+                            selectedCategory = category
+                        }
+                    }) {
+                        HStack {
+                            Text(title)
+                                .font(.headline)
+                                .foregroundColor(isSelected ? .white : AppTheme.text)
+                            
+                            Text("(\(items.count))")
+                                .font(.subheadline)
+                                .foregroundColor(isSelected ? .white.opacity(0.8) : AppTheme.textSecondary)
+                        }
                         .padding(.vertical, 8)
                         .padding(.horizontal, 12)
-                        .foregroundColor(isSelected ? .white : AppTheme.text)
-                        .background(isSelected ? AppTheme.primary : Color.clear)
-                        .cornerRadius(8)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 8)
-                                .stroke(isSelected ? Color.clear : AppTheme.borderColor, lineWidth: 1)
+                        .background(
+                            isSelected ? 
+                                AppTheme.primary : 
+                                AppTheme.cardBackground.opacity(0.8)
                         )
+                        .cornerRadius(8)
+                    }
+                    .buttonStyle(PlainButtonStyle())
+                    
+                    Spacer()
+                    
+                    // Show completed count if any items are checked
+                    let completedCount = items.filter { viewModel.isSelected($0) }.count
+                    if completedCount > 0 {
+                        Text("\(completedCount) completed")
+                            .font(.caption)
+                            .foregroundColor(AppTheme.textSecondary)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .background(AppTheme.cardBackground.opacity(0.8))
+                            .cornerRadius(4)
+                    }
                 }
-                .buttonStyle(PlainButtonStyle())
+                .padding(.top, 8)
                 
-                // Wrap ForEach in a drag-and-drop context
+                // Items list
                 ForEach(items) { item in
-                    // Item row with binding
                     GroceryItemRow(
                         item: item,
                         isSelected: viewModel.isSelected(item),
                         isFavorite: viewModel.isFavorite(item),
+                        isEditing: editMode == .active,
+                        isItemSelected: selectedItems.contains(item.id),
                         onToggle: {
-                            viewModel.toggleItem(item)
+                            if editMode == .active {
+                                if selectedItems.contains(item.id) {
+                                    selectedItems.remove(item.id)
+                                } else {
+                                    selectedItems.insert(item.id)
+                                }
+                            } else {
+                                viewModel.toggleItem(item)
+                            }
                         },
                         onDelete: { viewModel.deleteItem(item) },
                         onFavorite: { viewModel.toggleFavorite(item) },
@@ -205,31 +277,26 @@ struct ShoppingListView: View {
                         onDecreaseQuantity: { viewModel.decreaseQuantity(item) }
                     )
                     .environmentObject(viewModel)
-                    .onDrag {
-                        // Return a drag item with the ID as a string
-                        return NSItemProvider(object: item.id.uuidString as NSString)
-                    }
+                    .transition(.opacity.combined(with: .slide))
                     .swipeActions(edge: .trailing, allowsFullSwipe: true) {
                         Button(role: .destructive) {
-                            viewModel.deleteItem(item)
+                            withAnimation {
+                                viewModel.deleteItem(item)
+                            }
                         } label: {
                             Label("Delete", systemImage: "trash")
                         }
-                    }
-                    .swipeActions(edge: .leading, allowsFullSwipe: true) {
+                        
                         Button {
                             viewModel.toggleFavorite(item)
                         } label: {
-                            Label(
-                                viewModel.isFavorite(item) ? "Remove Favorite" : "Favorite",
-                                systemImage: viewModel.isFavorite(item) ? "star.slash" : "star.fill"
-                            )
+                            Label(viewModel.isFavorite(item) ? "Unfavorite" : "Favorite", 
+                                  systemImage: viewModel.isFavorite(item) ? "star.slash" : "star")
                         }
                         .tint(.yellow)
                     }
                 }
                 .onMove { from, to in
-                    // Handle the reordering
                     viewModel.moveItems(in: category, from: from, to: to)
                 }
             }
@@ -251,12 +318,14 @@ struct ShoppingListView: View {
     }
     
     private func addQuickItem(name: String) {
-        // Using grams as the measurement unit
+        // Get smart defaults based on item name
+        let (defaultAmount, defaultUnit) = getSmartDefaults(for: name)
+        
         let item = Ingredient(
             id: UUID(),
             name: name,
-            amount: 1,
-            unit: .grams,
+            amount: defaultAmount,
+            unit: defaultUnit,
             category: determineCategory(from: name),
             isPerishable: isPerishable(name),
             typicalShelfLife: 7
@@ -266,6 +335,37 @@ struct ShoppingListView: View {
         // Add haptic feedback
         let generator = UIImpactFeedbackGenerator(style: .medium)
         generator.impactOccurred()
+    }
+    
+    private func getSmartDefaults(for itemName: String) -> (amount: Double, unit: IngredientUnit) {
+        let lowercasedName = itemName.lowercased()
+        
+        switch lowercasedName {
+        case "milk":
+            return (1, .liters)
+        case "eggs":
+            return (12, .pieces)
+        case "bread":
+            return (1, .pieces)
+        case "bananas":
+            return (6, .pieces)
+        case "apples":
+            return (6, .pieces)
+        case "tomatoes":
+            return (6, .pieces)
+        case "onions":
+            return (3, .pieces)
+        case "potatoes":
+            return (1, .kilograms)
+        case "rice":
+            return (1, .kilograms)
+        case "flour":
+            return (1, .kilograms)
+        case "sugar":
+            return (1, .kilograms)
+        default:
+            return (1, .pieces)
+        }
     }
     
     // Helper function to determine if an item is perishable
@@ -362,187 +462,6 @@ struct ShoppingListView: View {
            let rootViewController = windowScene.windows.first?.rootViewController {
             rootViewController.present(activityVC, animated: true)
         }
-    }
-}
-
-// Replace the existing GroceryItemRow implementation (around line 489) with this improved version
-struct GroceryItemRow: View {
-    let item: Ingredient
-    let isSelected: Bool
-    let isFavorite: Bool
-    
-    let onToggle: () -> Void
-    let onDelete: () -> Void
-    let onFavorite: () -> Void
-    let onIncreaseQuantity: () -> Void
-    let onDecreaseQuantity: () -> Void
-    
-    @Environment(\.colorScheme) var colorScheme
-    @State private var isPressed = false
-    @State private var isEditingQuantity = false
-    @State private var customQuantity = ""
-    @EnvironmentObject var viewModel: ShoppingListViewModel
-    
-    var body: some View {
-        HStack(spacing: 12) {
-            // Checkbox with improved animation
-            Button(action: onToggle) {
-                ZStack {
-                    RoundedRectangle(cornerRadius: 8)
-                        .stroke(isSelected ? AppTheme.primary : AppTheme.borderColor, lineWidth: 2)
-                        .frame(width: 26, height: 26)
-                        .background(
-                            isSelected ? AppTheme.primary : Color.clear,
-                            in: RoundedRectangle(cornerRadius: 8)
-                        )
-                    
-                    if isSelected {
-                        Image(systemName: "checkmark")
-                            .font(.system(size: 14, weight: .bold))
-                            .foregroundColor(.white)
-                            .transition(.scale.combined(with: .opacity))
-                            .animation(.spring(response: 0.2, dampingFraction: 0.7), value: isSelected)
-                    }
-                }
-            }
-            .buttonStyle(PlainButtonStyle())
-            
-            // Item info with favorite indicator and notes
-            VStack(alignment: .leading, spacing: 4) {
-                HStack(spacing: 6) {
-                    Text(item.name)
-                        .font(.system(size: 16, weight: .medium))
-                        .foregroundColor(AppTheme.text)
-                        .strikethrough(isSelected)
-                        .opacity(isSelected ? 0.5 : 1)
-                    
-                    if isFavorite {
-                        Image(systemName: "star.fill")
-                            .font(.system(size: 12))
-                            .foregroundColor(.yellow)
-                    }
-                    
-                    if item.isPerishable {
-                        Image(systemName: "clock")
-                            .font(.system(size: 12))
-                            .foregroundColor(AppTheme.primaryLight)
-                    }
-                }
-                
-                if let notes = item.notes, !notes.isEmpty {
-                    Text(notes)
-                    .font(.caption)
-                        .foregroundColor(AppTheme.textSecondary)
-                        .lineLimit(1)
-                }
-            }
-            
-            Spacer()
-            
-            // Quantity controls with improved styling
-            if isEditingQuantity {
-                // Custom quantity input
-                HStack(spacing: 8) {
-                    TextField("", text: $customQuantity)
-                        .keyboardType(.decimalPad)
-                        .multilineTextAlignment(.center)
-                        .frame(width: 60)
-                        .padding(.vertical, 8)
-                        .background(AppTheme.quantityControlBackground)
-                        .cornerRadius(8)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 8)
-                                .stroke(AppTheme.borderColor, lineWidth: 1)
-                        )
-                    
-                    Text(item.unit.rawValue)
-                        .font(.system(size: 14))
-                        .foregroundColor(AppTheme.text)
-                    
-                    Button {
-                        if let value = Double(customQuantity), value > 0 {
-                            viewModel.setQuantity(item, to: value)
-                        }
-                        isEditingQuantity = false
-                    } label: {
-                        Image(systemName: "checkmark.circle.fill")
-                            .foregroundColor(AppTheme.primary)
-                            .font(.system(size: 24))
-                    }
-                    .buttonStyle(PlainButtonStyle())
-                }
-            } else {
-                // Standard quantity controls
-                HStack(spacing: 0) {
-                    Button(action: onDecreaseQuantity) {
-                        Image(systemName: "minus")
-                            .font(.system(size: 14, weight: .medium))
-                            .padding(.horizontal, 10)
-                            .padding(.vertical, 8)
-                            .foregroundColor(AppTheme.primary)
-                    }
-                    .contentShape(Rectangle())
-                    .buttonStyle(PlainButtonStyle())
-                    .opacity(item.amount > 1 ? 1 : 0.5)
-                    .disabled(item.amount <= 1)
-                    
-                    // Make quantity text tappable to edit
-                    Text("\(Int(item.amount)) \(item.unit.rawValue)")
-                        .font(.system(size: 15, weight: .medium))
-                        .padding(.horizontal, 10)
-                        .foregroundColor(AppTheme.text)
-                        .frame(minWidth: 60)
-                        .onTapGesture {
-                            customQuantity = "\(Int(item.amount))"
-                            isEditingQuantity = true
-                        }
-                    
-                    Button(action: onIncreaseQuantity) {
-                        Image(systemName: "plus")
-                            .font(.system(size: 14, weight: .medium))
-                            .padding(.horizontal, 10)
-                            .padding(.vertical, 8)
-                            .foregroundColor(AppTheme.primary)
-                    }
-                    .contentShape(Rectangle())
-                    .buttonStyle(PlainButtonStyle())
-                }
-                .background(AppTheme.quantityControlBackground)
-                .cornerRadius(10)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 10)
-                        .stroke(AppTheme.borderColor, lineWidth: 1)
-                )
-            }
-        }
-        .padding(.vertical, 14)
-        .padding(.horizontal, 16)
-        .background(
-            RoundedRectangle(cornerRadius: 14)
-                .fill(colorScheme == .dark ? AppTheme.cardBackground.opacity(0.8) : AppTheme.cardBackground)
-                .shadow(color: isPressed ? .clear : (colorScheme == .dark ? Color.clear : AppTheme.cardShadowColor), 
-                        radius: isPressed ? 0 : 4,
-                        x: 0, y: isPressed ? 0 : 2)
-        )
-        .scaleEffect(isPressed ? 0.98 : 1.0)
-        .animation(.spring(response: 0.3, dampingFraction: 0.6), value: isPressed)
-        .onTapGesture {
-            withAnimation {
-                isPressed = true
-            }
-            // Add haptic feedback
-            let generator = UIImpactFeedbackGenerator(style: .light)
-            generator.impactOccurred()
-            
-            // Toggle after a short delay
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                onToggle()
-                withAnimation {
-                    isPressed = false
-                }
-            }
-        }
-        .contentShape(Rectangle())
     }
 }
 
