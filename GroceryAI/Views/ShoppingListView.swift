@@ -2,7 +2,7 @@ import SwiftUI
 import UIKit // Add this for UIActivityViewController
 
 struct ShoppingListView: View {
-    @StateObject private var viewModel = ShoppingListViewModel()
+    @ObservedObject var viewModel: ShoppingListViewModel
     @State private var searchText = ""
     @State private var showingAddItem = false
     @State private var editMode: EditMode = .inactive
@@ -13,6 +13,16 @@ struct ShoppingListView: View {
     
     // Add a state variable to track the currently selected category
     @State private var selectedCategory: IngredientCategory? = nil
+    
+    // Default initializer that creates its own ViewModel (for previews and standalone use)
+    init() {
+        self.viewModel = ShoppingListViewModel()
+    }
+    
+    // Initializer that accepts a shared ViewModel
+    init(viewModel: ShoppingListViewModel) {
+        self.viewModel = viewModel
+    }
     
     var body: some View {
         NavigationStack {

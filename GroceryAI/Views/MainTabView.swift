@@ -4,10 +4,16 @@ import UIKit
 struct MainTabView: View {
     @State private var selectedTab = 0
     
+    // Create shared ViewModels
+    @StateObject private var shoppingListViewModel = ShoppingListViewModel()
+    @StateObject private var recipeListViewModel = RecipeListViewModel()
+    
     var body: some View {
+        let recipesViewModel = RecipesViewModel(recipeListViewModel: recipeListViewModel)
+        
         TabView(selection: $selectedTab) {
             NavigationStack {
-                ShoppingListView()
+                ShoppingListView(viewModel: shoppingListViewModel)
             }
             .tabItem {
                 Label("List", systemImage: "list.bullet")
@@ -15,7 +21,11 @@ struct MainTabView: View {
             .tag(0)
             
             NavigationStack {
-                RecipesView()
+                RecipesView(
+                    shoppingListViewModel: shoppingListViewModel,
+                    recipeListViewModel: recipeListViewModel,
+                    recipesViewModel: recipesViewModel
+                )
             }
             .tabItem {
                 Label("Recipes", systemImage: "book")

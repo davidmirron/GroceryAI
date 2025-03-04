@@ -3,7 +3,37 @@ import SwiftUI
 struct RecipeDetailView: View {
     let recipe: Recipe
     @ObservedObject var viewModel: ShoppingListViewModel
+    @ObservedObject var recipesViewModel: RecipesViewModel
     @State private var showingAddToListConfirmation = false
+    @State private var showingSaveConfirmation = false
+    @State private var scale: CGFloat = 1.0
+    
+    // Helper to determine appropriate emoji for recipe type
+    private var recipeEmoji: String {
+        let name = recipe.name.lowercased()
+        
+        if name.contains("pancake") {
+            return "🥞"
+        } else if name.contains("salad") {
+            return "🥗"
+        } else if name.contains("pasta") || name.contains("spaghetti") {
+            return "🍝"
+        } else if name.contains("cookie") {
+            return "🍪"
+        } else if name.contains("curry") {
+            return "🍛"
+        } else if name.contains("taco") {
+            return "🌮"
+        } else if name.contains("bread") || name.contains("banana") {
+            return "🍞"
+        } else if name.contains("stir fry") {
+            return "🥘"
+        } else if name.contains("chili") {
+            return "🌶️"
+        } else {
+            return "🍲"
+        }
+    }
     
     var body: some View {
         // Break down the complex ScrollView into smaller components
@@ -11,6 +41,14 @@ struct RecipeDetailView: View {
             VStack(alignment: .leading, spacing: 24) {
                 // Header section
                 recipeHeaderSection
+                
+                // Action buttons section
+                actionButtonsSection
+                
+                // Dietary tags if present
+                if !recipe.dietaryTags.isEmpty {
+                    dietaryTagsSection
+                }
                 
                 // Ingredients section
                 ingredientsSection
@@ -25,10 +63,29 @@ struct RecipeDetailView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
-                addToListButton
+                Menu {
+                    Button(action: addIngredientsToShoppingList) {
+                        Label("Add to Shopping List", systemImage: "cart.badge.plus")
+                    }
+                    
+                    Button(action: saveRecipe) {
+                        Label("Save Recipe", systemImage: "bookmark")
+                    }
+                    
+                    // Add sharing button in the future
+                    Button(action: {}) {
+                        Label("Share Recipe", systemImage: "square.and.arrow.up")
+                    }
+                } label: {
+                    Image(systemName: "ellipsis.circle")
+                        .foregroundColor(.white)
+                }
             }
         }
         .alert("Added to Shopping List", isPresented: $showingAddToListConfirmation) {
+            Button("OK", role: .cancel) { }
+        }
+        .alert("Recipe Saved", isPresented: $showingSaveConfirmation) {
             Button("OK", role: .cancel) { }
         }
     }
@@ -41,6 +98,11 @@ struct RecipeDetailView: View {
             // Recipe image
             recipeImage
             
+            // Recipe name
+            Text(recipe.name)
+                .font(.system(size: 28, weight: .bold))
+                .foregroundColor(AppTheme.text)
+            
             // Recipe basic info (time, servings, etc.)
             recipeInfoRow
         }
@@ -50,12 +112,87 @@ struct RecipeDetailView: View {
     private var recipeImage: some View {
         ZStack {
             Rectangle()
-                .fill(Color.gray.opacity(0.2))
+                .fill(LinearGradient(
+                    colors: [AppTheme.primary.opacity(0.1), AppTheme.secondary.opacity(0.1)],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                ))
                 .aspectRatio(16/9, contentMode: .fit)
-                .cornerRadius(12)
+                .cornerRadius(16)
             
-            Text("🍲")
-                .font(.system(size: 72))
+            if let imageName = recipe.imageName, let uiImage = UIImage(named: imageName) {
+                Image(uiImage: uiImage)
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .frame(maxWidth: .infinity)
+                    .cornerRadius(16)
+                    .clipped()
+            } else {
+                Text(recipeEmoji)
+                    .font(.system(size: 80))
+                    .scaleEffect(scale)
+                    .onAppear {
+                        // Add a subtle animation to the emoji
+                        withAnimation(Animation.easeInOut(duration: 2).repeatForever(autoreverses: true)) {
+                            scale = 1.05
+                        }
+                    }
+            }
+        }
+        .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 2)
+    }
+    
+    // Action buttons section
+    private var actionButtonsSection: some View {
+        HStack(spacing: 16) {
+            // Add to list button
+            Button(action: addIngredientsToShoppingList) {
+                HStack {
+                    Image(systemName: "cart.badge.plus")
+                    Text("Add to List")
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 12)
+                .background(AppTheme.primary)
+                .foregroundColor(.white)
+                .cornerRadius(12)
+            }
+            
+            // Save recipe button
+            Button(action: saveRecipe) {
+                HStack {
+                    Image(systemName: "bookmark")
+                    Text("Save Recipe")
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 12)
+                .background(AppTheme.secondary)
+                .foregroundColor(.white)
+                .cornerRadius(12)
+            }
+        }
+    }
+    
+    // Dietary tags section
+    private var dietaryTagsSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Dietary Tags")
+                .font(.headline)
+                .foregroundColor(AppTheme.text)
+            
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 10) {
+                    ForEach(Array(recipe.dietaryTags), id: \.self) { tag in
+                        Text(tag.rawValue)
+                            .font(.subheadline)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 8)
+                            .background(AppTheme.primary.opacity(0.1))
+                            .foregroundColor(AppTheme.primary)
+                            .cornerRadius(20)
+                    }
+                }
+            }
         }
     }
     
@@ -66,7 +203,12 @@ struct RecipeDetailView: View {
             
             RecipeInfoItem(systemImage: "clock", text: cookingTime)
             RecipeInfoItem(systemImage: "person.2", text: "\(recipe.servings) servings")
-            RecipeInfoItem(systemImage: "flame", text: "Medium")
+            
+            if let nutrition = recipe.nutritionalInfo {
+                RecipeInfoItem(systemImage: "flame", text: "\(nutrition.calories) cal")
+            } else {
+                RecipeInfoItem(systemImage: "flame", text: "Medium")
+            }
         }
     }
     
@@ -115,16 +257,6 @@ struct RecipeDetailView: View {
         }
     }
     
-    // Add to list button
-    private var addToListButton: some View {
-        Button {
-            addIngredientsToShoppingList()
-            showingAddToListConfirmation = true
-        } label: {
-            Text("Add to List")
-        }
-    }
-    
     // MARK: - Supporting Functions
     
     private func formatTime(_ seconds: TimeInterval) -> String {
@@ -142,6 +274,20 @@ struct RecipeDetailView: View {
         for ingredient in recipe.ingredients {
             viewModel.addItem(ingredient)
         }
+        showingAddToListConfirmation = true
+        
+        // Haptic feedback on add
+        let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
+        impactFeedback.impactOccurred()
+    }
+    
+    private func saveRecipe() {
+        recipesViewModel.addToRecipeList(recipe)
+        showingSaveConfirmation = true
+        
+        // Haptic feedback on save
+        let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
+        impactFeedback.impactOccurred()
     }
 }
 
@@ -183,16 +329,13 @@ struct RecipeInfoItem: View {
     let text: String
     
     var body: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: 6) {
             Image(systemName: systemImage)
-                .foregroundColor(AppTheme.primary)
+                .font(.subheadline)
             
             Text(text)
-                .foregroundColor(AppTheme.text)
+                .font(.subheadline)
         }
-        .padding(.vertical, 8)
-        .padding(.horizontal, 12)
-        .background(AppTheme.cardBackground)
-        .cornerRadius(8)
+        .foregroundColor(AppTheme.textSecondary)
     }
 } 

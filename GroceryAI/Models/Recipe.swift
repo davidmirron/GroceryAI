@@ -10,6 +10,9 @@ class Recipe: Identifiable, ObservableObject {
     let nutritionalInfo: NutritionInfo?  // Renamed to avoid ambiguity
     @Published var missingIngredients: [Ingredient]
     var dietaryTags: Set<DietaryTag> = []
+    let imageName: String? // New property for storing image name
+    var matchScore: Double = 0.0 // Match score for sorting recipes
+    var isCustomRecipe: Bool = false // Track whether this is a user-created recipe
     
     init(id: UUID = UUID(), 
          name: String, 
@@ -19,7 +22,10 @@ class Recipe: Identifiable, ObservableObject {
          servings: Int, 
          nutritionalInfo: NutritionInfo? = nil, 
          missingIngredients: [Ingredient] = [],
-         dietaryTags: Set<DietaryTag> = []) {
+         dietaryTags: Set<DietaryTag> = [],
+         imageName: String? = nil,
+         matchScore: Double = 0.0,
+         isCustomRecipe: Bool = false) {
         
         self.id = id
         self.name = name
@@ -30,6 +36,9 @@ class Recipe: Identifiable, ObservableObject {
         self.nutritionalInfo = nutritionalInfo
         self.missingIngredients = missingIngredients
         self.dietaryTags = dietaryTags
+        self.imageName = imageName
+        self.matchScore = matchScore
+        self.isCustomRecipe = isCustomRecipe
     }
     
     enum DietaryTag: String, CaseIterable {

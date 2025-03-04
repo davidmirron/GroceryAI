@@ -1,6 +1,6 @@
 import Foundation
 
-struct Ingredient: Identifiable, Codable {
+struct Ingredient: Identifiable, Codable, Equatable {
     let id: UUID
     var name: String
     var amount: Double
@@ -29,6 +29,11 @@ struct Ingredient: Identifiable, Codable {
         self.typicalShelfLife = typicalShelfLife
         self.notes = notes
         self.customOrder = customOrder
+    }
+    
+    // Implement Equatable to compare ingredients
+    static func == (lhs: Ingredient, rhs: Ingredient) -> Bool {
+        return lhs.id == rhs.id
     }
 }
 
