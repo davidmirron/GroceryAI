@@ -36,80 +36,79 @@ struct RecipesView: View {
     }
     
     var body: some View {
-        NavigationView {
-            ZStack {
-                // Background
-                AppTheme.background
-                    .edgesIgnoringSafeArea(.all)
-                
-                VStack(spacing: 0) { // Remove default spacing
-                    // Break down the view into smaller components
-                    Group {
-                        if recipesViewModel.isLoading {
-                            loadingView
-                        }
-                        else if let error = recipesViewModel.errorMessage {
-                            errorView(message: error)
-                        }
-                        else if recipesViewModel.recipes.isEmpty {
-                            emptyRecipesView
-                        }
-                        else {
-                            ScrollViewReader { scrollProxy in
-                                ScrollView(showsIndicators: true) {
-                                    VStack(spacing: 8) { // Reduced spacing
-                                        // Display user's custom recipes at the top
-                                        if !recipesViewModel.customRecipes().isEmpty {
-                                            customRecipesSection
-                                                .id("customRecipes") // ID for scrolling
-                                                .background(
-                                                    RoundedRectangle(cornerRadius: 16)
-                                                        .fill(colorScheme == .dark ? Color(.systemGray6) : Color(.systemBackground))
-                                                        .shadow(color: Color.black.opacity(0.05), radius: 5, x: 0, y: 2)
-                                                )
-                                                .padding(.horizontal)
-                                                .padding(.top, 4) // Reduced spacing
-                                                .overlay(
-                                                    // Highlight animation when scrolling to custom recipes
-                                                    RoundedRectangle(cornerRadius: 16)
-                                                        .stroke(AppTheme.primary, lineWidth: showMyRecipesHighlight ? 2 : 0)
-                                                        .padding(.horizontal)
-                                                        .padding(.top, 4)
-                                                        .opacity(showMyRecipesHighlight ? 1.0 : 0.0)
-                                                )
-                                                .animation(.easeInOut(duration: 0.7), value: showMyRecipesHighlight)
-                                        }
-                                        
-                                        // Recipe suggestions section title
-                                        HStack {
-                                            Text("Recommended For You")
-                                                .font(.headline)
-                                            Spacer()
-                                        }
-                                        .padding(.horizontal)
-                                        .padding(.top, 8)
-                                        
-                                        // Then display suggested recipes
-                                        recipeListView
+        ZStack {
+            // Background
+            AppTheme.background
+                .edgesIgnoringSafeArea(.all)
+            
+            VStack(spacing: 0) { // Remove default spacing
+                // Break down the view into smaller components
+                Group {
+                    if recipesViewModel.isLoading {
+                        loadingView
+                    }
+                    else if let error = recipesViewModel.errorMessage {
+                        errorView(message: error)
+                    }
+                    else if recipesViewModel.recipes.isEmpty {
+                        emptyRecipesView
+                    }
+                    else {
+                        ScrollViewReader { scrollProxy in
+                            ScrollView(showsIndicators: true) {
+                                VStack(spacing: 8) { // Reduced spacing
+                                    // Display user's custom recipes at the top
+                                    if !recipesViewModel.customRecipes().isEmpty {
+                                        customRecipesSection
+                                            .id("customRecipes") // ID for scrolling
+                                            .background(
+                                                RoundedRectangle(cornerRadius: 16)
+                                                    .fill(AppTheme.cardBackground)
+                                                    .shadow(color: AppTheme.cardShadowColor, radius: 5, x: 0, y: 2)
+                                            )
+                                            .padding(.horizontal)
+                                            .padding(.top, 4) // Reduced spacing
+                                            .overlay(
+                                                // Highlight animation when scrolling to custom recipes
+                                                RoundedRectangle(cornerRadius: 16)
+                                                    .stroke(AppTheme.primary, lineWidth: showMyRecipesHighlight ? 2 : 0)
+                                                    .padding(.horizontal)
+                                                    .padding(.top, 4)
+                                                    .opacity(showMyRecipesHighlight ? 1.0 : 0.0)
+                                            )
+                                            .animation(.easeInOut(duration: 0.7), value: showMyRecipesHighlight)
                                     }
-                                    .padding(.bottom, 20)
+                                    
+                                    // Recipe suggestions section title
+                                    HStack {
+                                        Text("Recommended For You")
+                                            .font(.headline)
+                                            .foregroundColor(AppTheme.text)
+                                        Spacer()
+                                    }
+                                    .padding(.horizontal)
+                                    .padding(.top, 8)
+                                    
+                                    // Then display suggested recipes
+                                    recipeListView
                                 }
-                                .onChange(of: scrollToCustomRecipes) { shouldScroll in
-                                    if shouldScroll {
+                                .padding(.bottom, 20)
+                            }
+                            .onChange(of: scrollToCustomRecipes) { shouldScroll in
+                                if shouldScroll {
+                                    withAnimation {
+                                        scrollProxy.scrollTo("customRecipes", anchor: .top)
+                                        // Show highlight animation
+                                        showMyRecipesHighlight = true
+                                    }
+                                    
+                                    // Reset the flag
+                                    scrollToCustomRecipes = false
+                                    
+                                    // Fade out highlight after a delay
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
                                         withAnimation {
-                                            scrollProxy.scrollTo("customRecipes", anchor: .top)
-                                            // Show highlight animation
-                                            showMyRecipesHighlight = true
-                                        }
-                                        
-                                        // Reset the flag
-                                        scrollToCustomRecipes = false
-                                        
-                                        // Fade out highlight after a delay
-                                        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                                            withAnimation {
-                                                showMyRecipesHighlight = false
-                                            }
+                                            showMyRecipesHighlight = false
                                         }
                                     }
                                 }
@@ -117,55 +116,54 @@ struct RecipesView: View {
                         }
                     }
                 }
-                .overlay(
-                    VStack {
-                        Spacer()
-                        if showScrollIndicator && recipesViewModel.recipes.count > 1 {
-                            Text("Scroll down for more recipes")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                                .padding(8)
-                                .background(Capsule().fill(colorScheme == .dark ? Color(.systemGray4) : Color.white.opacity(0.8)))
-                                .padding(.bottom, 8)
-                                .transition(.opacity)
-                                .onAppear {
-                                    // Auto-hide after 3 seconds
-                                    DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-                                        withAnimation {
-                                            showScrollIndicator = false
-                                        }
+            }
+            .overlay(
+                VStack {
+                    Spacer()
+                    if showScrollIndicator && recipesViewModel.recipes.count > 1 {
+                        Text("Scroll down for more recipes")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                            .padding(8)
+                            .background(Capsule().fill(colorScheme == .dark ? Color(.systemGray4) : Color.white.opacity(0.8)))
+                            .padding(.bottom, 8)
+                            .transition(.opacity)
+                            .onAppear {
+                                // Auto-hide after 3 seconds
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                                    withAnimation {
+                                        showScrollIndicator = false
                                     }
                                 }
-                        }
+                            }
                     }
-                )
-            }
-            .navigationTitle("Recipe Suggestions")
-            .navigationBarTitleDisplayMode(.inline) // Compact layout with smaller header
-            .toolbar {
-                ToolbarItemGroup(placement: .navigationBarTrailing) {
-                    Button(action: {
-                        refreshRecipes()
-                    }) {
-                        Image(systemName: "arrow.clockwise")
-                    }
-                    .disabled(recipesViewModel.isLoading)
-                    
-                    Button(action: {
-                        isShowingNewRecipeSheet = true
-                    }) {
-                        Image(systemName: "plus")
-                            .foregroundColor(AppTheme.primary)
-                            .padding(6)
-                            .background(
-                                Circle()
-                                    .fill(colorScheme == .dark ? Color(.systemGray5) : Color(.systemGray6))
-                            )
-                    }
+                }
+            )
+        }
+        .navigationTitle("Recipe Suggestions")
+        .navigationBarTitleDisplayMode(.inline) // Compact layout with smaller header
+        .toolbar {
+            ToolbarItemGroup(placement: .navigationBarTrailing) {
+                Button(action: {
+                    refreshRecipes()
+                }) {
+                    Image(systemName: "arrow.clockwise")
+                }
+                .disabled(recipesViewModel.isLoading)
+                
+                Button(action: {
+                    isShowingNewRecipeSheet = true
+                }) {
+                    Image(systemName: "plus")
+                        .foregroundColor(AppTheme.primary)
+                        .padding(6)
+                        .background(
+                            Circle()
+                                .fill(colorScheme == .dark ? Color(.systemGray5) : Color(.systemGray6))
+                        )
                 }
             }
         }
-        .navigationViewStyle(StackNavigationViewStyle())
         .sheet(isPresented: $isShowingNewRecipeSheet, onDismiss: {
             // Check if we should scroll to custom recipes when sheet is dismissed
             if let recipeForm = recipesViewModel.customRecipes().first, recipeForm.isCustomRecipe {
@@ -651,22 +649,29 @@ struct RecipesView: View {
                         .font(.subheadline)
                         .fontWeight(.medium)
                         .lineLimit(1)
-                        .foregroundColor(.primary)
+                        .foregroundColor(AppTheme.text)
                     
                     HStack {
                         Image(systemName: "clock")
                             .font(.caption2)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(AppTheme.textSecondary)
                         Text("\(Int(recipe.estimatedTime / 60)) min")
                             .font(.caption)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(AppTheme.textSecondary)
                     }
                 }
                 .padding(.horizontal, 4)
             }
             .padding(8)
-            .background(RoundedRectangle(cornerRadius: 16).fill(colorScheme == .dark ? Color(.systemGray6) : Color(.systemBackground)))
-            .shadow(color: Color.black.opacity(0.1), radius: 4, x: 0, y: 2)
+            .background(RoundedRectangle(cornerRadius: 16).fill(AppTheme.cardBackground))
+            .overlay(
+                RoundedRectangle(cornerRadius: 16)
+                    .stroke(colorScheme == .dark ? AppTheme.borderColor : Color.clear, lineWidth: 1)
+            )
+            .shadow(
+                color: colorScheme == .dark ? Color.clear : AppTheme.cardShadowColor,
+                radius: 4, x: 0, y: 2
+            )
         }
         .buttonStyle(PlainButtonStyle())
     }
@@ -691,7 +696,7 @@ struct RecipesView: View {
                         Text("Add Recipe")
                             .font(.caption)
                             .fontWeight(.medium)
-                            .foregroundColor(.primary)
+                            .foregroundColor(AppTheme.text)
                     }
                 }
                 
@@ -703,9 +708,16 @@ struct RecipesView: View {
             .padding(8)
             .background(
                 RoundedRectangle(cornerRadius: 16)
-                    .fill(colorScheme == .dark ? Color(.systemGray6) : Color(.systemBackground))
+                    .fill(AppTheme.cardBackground)
             )
-            .shadow(color: Color.black.opacity(0.1), radius: 4, x: 0, y: 2)
+            .overlay(
+                RoundedRectangle(cornerRadius: 16)
+                    .stroke(colorScheme == .dark ? AppTheme.borderColor : Color.clear, lineWidth: 1)
+            )
+            .shadow(
+                color: colorScheme == .dark ? Color.clear : AppTheme.cardShadowColor,
+                radius: 4, x: 0, y: 2
+            )
         }
         .buttonStyle(PlainButtonStyle())
     }
