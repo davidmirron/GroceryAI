@@ -77,10 +77,12 @@ struct RecipeListView: View {
                         }
                 }
                 .sheet(isPresented: $isShowingNewRecipeSheet) {
-                    RecipeFormView(onSave: { newRecipe in
-                        recipeListViewModel.addRecipe(newRecipe)
-                        isShowingNewRecipeSheet = false
-                    })
+                    NavigationView {
+                        RecipeFormView(onSave: { newRecipe in
+                            recipeListViewModel.addRecipe(newRecipe)
+                            isShowingNewRecipeSheet = false
+                        })
+                    }
                 }
             } else {
                 // When in sheet mode, wrap the content in a NavigationView for better presentation
@@ -257,6 +259,7 @@ struct RecipeRow: View {
             VStack(alignment: .leading, spacing: 8) {
                 Text(recipe.name)
                     .font(.headline)
+                    .foregroundColor(AppTheme.text)
                 
                 HStack {
                     Label("\(Int(recipe.estimatedTime / 60)) min", systemImage: "clock")
@@ -268,7 +271,7 @@ struct RecipeRow: View {
                     }
                 }
                 .font(.caption)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(AppTheme.textSecondary)
                 
                 // Tags
                 ScrollView(.horizontal, showsIndicators: false) {
@@ -278,7 +281,8 @@ struct RecipeRow: View {
                                 .font(.caption)
                                 .padding(.horizontal, 8)
                                 .padding(.vertical, 4)
-                                .background(.blue.opacity(0.1))
+                                .background(AppTheme.chipBackground)
+                                .foregroundColor(AppTheme.chipText)
                                 .clipShape(Capsule())
                         }
                     }

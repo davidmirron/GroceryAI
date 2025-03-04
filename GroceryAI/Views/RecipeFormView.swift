@@ -441,403 +441,353 @@ struct NavigationControls: View {
 }
 
 struct RecipeFormView: View {
+    // MARK: - Environment and Dismissal
     @Environment(\.dismiss) private var dismiss
     @Environment(\.colorScheme) private var colorScheme
-    @Environment(\.presentationMode) private var presentationMode
-    
-    // MARK: - Form State
-    @State private var formState = RecipeFormState()
-    
-    // MARK: - UI State Properties
-    // These properties are separate from the form data but affect the UI
-    @State private var showingSuccessToast = false
-    @State private var showingValidationAlert = false
-    @State private var showSuccessAnimation = false
-    @State private var showingActionSheet = false
-    @State private var shouldNavigateToMyRecipes = false
-    
-    // Optional view model reference for enhanced integration
+
+    // MARK: - Dependencies
+    var onSave: (Recipe) -> Void
     var recipesViewModel: RecipesViewModel?
     
-    // Formatter for number input
-    private let amountFormatter: NumberFormatter = {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .decimal
-        formatter.minimumFractionDigits = 0
-        formatter.maximumFractionDigits = 2
-        formatter.zeroSymbol = ""
-        return formatter
-    }()
+    // MARK: - Form State
+    @State private var currentStep = 1
+    @State private var recipeName = ""
     
-    // Callback for when a recipe is saved
-    let onSave: (Recipe) -> Void
+    // Using separate arrays for ingredients for better binding control
+    @State private var ingredientNames: [String] = [""]
+    @State private var ingredientAmounts: [Double] = [1.0]
+    @State private var ingredientUnits: [IngredientUnit] = [.pieces]
+    @State private var ingredientCategories: [IngredientCategory] = [.other]
     
+    @State private var instructions: [String] = [""]
+    @State private var cookingHours = 0
+    @State private var cookingMinutes = 30
+    @State private var servings = 4
+    @State private var selectedDietaryTags: Set<Recipe.DietaryTag> = []
+    
+    // MARK: - UI State
+    @State private var showingValidationAlert = false
+    @State private var validationMessage = ""
+    @State private var showingSuccessAlert = false
+    @State private var keyboardHeight: CGFloat = 0
+    
+    // MARK: - Body
     var body: some View {
-        NavigationView {
-            ZStack {
-                // Use AppTheme.background to ensure dark mode compatibility
-                AppTheme.background
-                    .edgesIgnoringSafeArea(.all)
+        ZStack {
+            // Main content
+            VStack(spacing: 0) {
+                // Progress bar
+                ProgressBar(value: currentStep, total: 3)
+                    .padding(.horizontal)
+                    .padding(.top)
                 
-                VStack(spacing: 0) {
-                    // Progress View
-                    ProgressBar(value: formState.currentStep, total: formState.totalSteps)
-                        .padding(.horizontal, 24)
-                        .padding(.top, 8) // Reduced top padding
-                    
-                    // Step Title - More compact
-                    Text(stepTitle)
-                        .font(.headline)
-                        .padding(.top, 8)
-                        .padding(.bottom, 4)
-                    
-                    // Main Content - Step dependent
-                    ScrollView {
-                        VStack(spacing: 24) { // Reduced spacing
-                            // Different view for each step
-                            switch formState.currentStep {
-                            case 1:
-                                recipeDetailsSection
-                            case 2:
-                                ingredientsSection
-                            case 3:
-                                instructionsSection
-                            default:
-                                EmptyView()
-                            }
-                        }
-                        .padding([.horizontal, .bottom])
-                    }
-                    
-                    // Bottom navigation controls
-                    NavigationControls(
-                        currentStep: formState.currentStep,
-                        totalSteps: formState.totalSteps,
-                        canGoBack: formState.canMoveToPreviousStep(),
-                        canContinue: formState.canMoveToNextStep(),
-                        onBack: { formState.moveToPreviousStep() },
-                        onContinue: { formState.moveToNextStep() },
-                        onSave: saveRecipe
-                    )
-                    .background(
-                        // Use adaptable color for dark mode
-                        Rectangle()
-                            .fill(Color(.systemBackground))
-                            .shadow(color: Color.black.opacity(0.1), radius: 3, y: -2)
-                    )
-                }
+                // Step title
+                Text(stepTitle)
+                    .font(.title2)
+                    .fontWeight(.bold)
+                    .padding(.top, 8)
+                    .padding(.horizontal)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 
-                // Success overlay - improved for dark mode
-                if showSuccessAnimation {
-                    // Full-screen translucent overlay
-                    Color.black.opacity(0.5)
-                        .edgesIgnoringSafeArea(.all)
-                        .transition(.opacity)
-                    
-                    // Success animation
-                    VStack(spacing: 16) {
-                        // Checkmark in circle
-                        ZStack {
-                            Circle()
-                                .fill(AppTheme.primary)
-                                .frame(width: 80, height: 80)
-                            
-                            Image(systemName: "checkmark")
-                                .font(.system(size: 40, weight: .bold))
-                                .foregroundColor(.white)
-                        }
-                        .transition(.scale)
-                        
-                        // Success message
-                        Text("Recipe Saved!")
-                            .font(.title2)
-                            .fontWeight(.bold)
-                            .foregroundColor(.white)
-                        
-                        Text("Your recipe has been added to My Recipes")
-                            .font(.body)
-                            .foregroundColor(.white.opacity(0.8))
-                            .multilineTextAlignment(.center)
+                // Main form content
+                ScrollView {
+                    VStack(spacing: 20) {
+                        contentForCurrentStep
+                            .padding(.bottom, keyboardHeight > 0 ? keyboardHeight : 0)
                     }
-                    .padding(30)
-                    .background(
-                        RoundedRectangle(cornerRadius: 20)
-                            .fill(Color.black.opacity(0.7))
-                    )
-                    .shadow(radius: 10)
+                    .padding()
                 }
-            }
-            .navigationBarTitle("Create Recipe", displayMode: .inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    if formState.currentStep == formState.totalSteps {
-                        Button(action: saveRecipe) {
-                            Text("Save")
-                                .fontWeight(.semibold)
+                .animation(.default, value: currentStep)
+                
+                // Navigation controls
+                NavigationControls(
+                    currentStep: currentStep,
+                    totalSteps: 3,
+                    canGoBack: currentStep > 1,
+                    canContinue: canContinueToNextStep(),
+                    onBack: goToPreviousStep,
+                    onContinue: {
+                        if currentStep < 3 {
+                            goToNextStep()
                         }
-                    } else {
-                        EmptyView()
-                    }
-                }
-            }
-            .alert(isPresented: $showingValidationAlert) {
-                Alert(
-                    title: Text("Missing Information"),
-                    message: Text(formState.validationMessage ?? "Please fill out all required fields."),
-                    dismissButton: .default(Text("OK"))
+                    },
+                    onSave: saveRecipe
                 )
             }
-            // Replace ActionSheet with a custom view in modal for better control and dark mode compatibility
-            .sheet(isPresented: $showingActionSheet) {
-                NavigationView {
-                    VStack(spacing: 24) {
-                        Image("recipe_success") // Add a nice success image asset if available
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(height: 150)
-                            .padding(.top, 40)
-                        
-                        Text("Recipe Saved Successfully!")
-                            .font(.title2)
-                            .fontWeight(.bold)
-                        
-                        Text("Your recipe has been saved and added to your custom recipes.")
-                            .font(.body)
-                            .foregroundColor(.secondary)
-                            .multilineTextAlignment(.center)
-                            .padding(.horizontal)
-                        
-                        VStack(spacing: 16) {
-                            Button(action: {
-                                // Close the sheet
-                                showingActionSheet = false
-                                // Then close the form
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                                    presentationMode.wrappedValue.dismiss()
-                                    // Signal to the parent view to show the My Recipes section
-                                    shouldNavigateToMyRecipes = true
-                                }
-                            }) {
-                                HStack {
-                                    Image(systemName: "list.bullet")
-                                    Text("View Your Recipes")
-                                }
-                                .frame(maxWidth: .infinity)
-                                .padding()
-                                .background(AppTheme.primary)
-                                .foregroundColor(.white)
-                                .cornerRadius(10)
-                            }
-                            
-                            Button(action: {
-                                // Just close both sheets
-                                showingActionSheet = false
-                                presentationMode.wrappedValue.dismiss()
-                            }) {
-                                Text("Close")
-                                    .frame(maxWidth: .infinity)
-                                    .padding()
-                                    .background(Color.gray.opacity(0.2))
-                                    .foregroundColor(.primary)
-                                    .cornerRadius(10)
-                            }
-                        }
-                        .padding(.horizontal)
-                        
-                        Spacer()
+            
+            // Success alert overlay
+            if showingSuccessAlert {
+                Color.black.opacity(0.4)
+                    .edgesIgnoringSafeArea(.all)
+                    .transition(.opacity)
+                
+                VStack(spacing: 20) {
+                    Image(systemName: "checkmark.circle.fill")
+                        .font(.system(size: 60))
+                        .foregroundColor(.green)
+                    
+                    Text("Recipe Saved!")
+                        .font(.title2)
+                        .fontWeight(.bold)
+                    
+                    Text("Your recipe has been successfully saved.")
+                        .multilineTextAlignment(.center)
+                    
+                    Button(action: {
+                        dismiss()
+                    }) {
+                        Text("View Your Recipes")
+                            .fontWeight(.medium)
+                            .padding()
+                            .frame(maxWidth: .infinity)
+                            .background(AppTheme.primary)
+                            .foregroundColor(.white)
+                            .cornerRadius(10)
                     }
-                    .navigationBarItems(trailing: Button("Close") {
-                        showingActionSheet = false
-                        presentationMode.wrappedValue.dismiss()
-                    })
+                    .padding(.top, 10)
+                }
+                .padding(30)
+                .background(
+                    RoundedRectangle(cornerRadius: 16)
+                        .fill(Color(UIColor.systemBackground))
+                        .shadow(color: Color.black.opacity(0.2), radius: 20, x: 0, y: 10)
+                )
+                .padding(20)
+                .transition(.scale.combined(with: .opacity))
+            }
+        }
+        .navigationBarTitle("", displayMode: .inline)
+        .navigationBarBackButtonHidden(true)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button(action: { dismiss() }) {
+                    Image(systemName: "xmark")
+                        .foregroundColor(.primary)
                 }
             }
+        }
+        .alert(isPresented: $showingValidationAlert) {
+            Alert(
+                title: Text("Please Check"),
+                message: Text(validationMessage),
+                dismissButton: .default(Text("OK"))
+            )
+        }
+        .onAppear {
+            // Set initial values if needed from RecipesViewModel
         }
     }
     
     // MARK: - Computed Properties
-    
     private var stepTitle: String {
-        switch formState.currentStep {
-        case 1:
-            return "Recipe Details"
-        case 2:
-            return "Ingredients"
-        case 3:
-            return "Instructions"
-        default:
-            return ""
+        switch currentStep {
+        case 1: return "Basic Information"
+        case 2: return "Ingredients"
+        case 3: return "Instructions"
+        default: return "Create Recipe"
         }
     }
     
-    // MARK: - View Components
+    private var contentForCurrentStep: some View {
+        Group {
+            switch currentStep {
+            case 1: basicInfoStep
+            case 2: ingredientsStep
+            case 3: instructionsStep
+            default: EmptyView()
+            }
+        }
+    }
     
-    // Recipe Details Section (Step 1)
-    private var recipeDetailsSection: some View {
-        VStack(alignment: .leading, spacing: 24) {
-            // Recipe Name
-            VStack(alignment: .leading) {
+    // MARK: - Form Steps
+    private var basicInfoStep: some View {
+        VStack(alignment: .leading, spacing: 20) {
+            // Recipe name field
+            VStack(alignment: .leading, spacing: 8) {
                 Text("Recipe Name")
                     .font(.headline)
                 
-                TextField("Enter recipe name", text: $formState.recipeName)
+                TextField("Enter recipe name", text: $recipeName)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .padding(.vertical, 5)
                     .submitLabel(.next)
             }
             
-            // Cooking Time
-            VStack(alignment: .leading) {
+            // Servings field
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Servings")
+                    .font(.headline)
+                
+                Stepper(value: $servings, in: 1...20) {
+                    Text("\(servings) \(servings == 1 ? "serving" : "servings")")
+                }
+                .padding(.vertical, 8)
+                .padding(.horizontal, 12)
+                .background(Color(UIColor.secondarySystemBackground))
+                .cornerRadius(8)
+            }
+            
+            // Cooking time
+            VStack(alignment: .leading, spacing: 8) {
                 Text("Cooking Time")
                     .font(.headline)
                 
                 HStack {
-                    Picker("Hours", selection: $formState.cookingHours) {
-                        ForEach(0..<24) { hour in
-                            Text("\(hour) hr").tag(hour)
+                    // Hours picker
+                    VStack(alignment: .leading) {
+                        Text("Hours")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        
+                        Picker("Hours", selection: $cookingHours) {
+                            ForEach(0..<24) { hour in
+                                Text("\(hour)").tag(hour)
+                            }
                         }
+                        .pickerStyle(MenuPickerStyle())
+                        .frame(maxWidth: .infinity)
+                        .padding(8)
+                        .background(Color(UIColor.secondarySystemBackground))
+                        .cornerRadius(8)
                     }
-                    .pickerStyle(MenuPickerStyle())
-                    .frame(maxWidth: .infinity)
-                    .padding(10)
-                    .background(
-                        RoundedRectangle(cornerRadius: 8)
-                            .fill(Color(.systemGray6))
-                    )
                     
-                    Text(":")
-                        .font(.title2)
-                        .padding(.horizontal, 5)
-                    
-                    Picker("Minutes", selection: $formState.cookingMinutes) {
-                        ForEach([0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55], id: \.self) { minute in
-                            Text("\(minute) min").tag(minute)
+                    // Minutes picker
+                    VStack(alignment: .leading) {
+                        Text("Minutes")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        
+                        Picker("Minutes", selection: $cookingMinutes) {
+                            ForEach(Array(stride(from: 0, to: 60, by: 5)), id: \.self) { minute in
+                                Text("\(minute)").tag(minute)
+                            }
                         }
+                        .pickerStyle(MenuPickerStyle())
+                        .frame(maxWidth: .infinity)
+                        .padding(8)
+                        .background(Color(UIColor.secondarySystemBackground))
+                        .cornerRadius(8)
                     }
-                    .pickerStyle(MenuPickerStyle())
-                    .frame(maxWidth: .infinity)
-                    .padding(10)
-                    .background(
-                        RoundedRectangle(cornerRadius: 8)
-                            .fill(Color(.systemGray6))
-                    )
                 }
             }
             
-            // Servings
-            VStack(alignment: .leading) {
-                Text("Servings")
-                    .font(.headline)
-                
-                Picker("Servings", selection: $formState.servings) {
-                    ForEach(1..<13) { serving in
-                        Text("\(serving) serving\(serving == 1 ? "" : "s")").tag(serving)
-                    }
-                }
-                .pickerStyle(MenuPickerStyle())
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(10)
-                .background(
-                    RoundedRectangle(cornerRadius: 8)
-                        .fill(Color(.systemGray6))
-                )
-            }
-            
-            // Dietary Tags
-            VStack(alignment: .leading) {
+            // Dietary tags
+            VStack(alignment: .leading, spacing: 8) {
                 Text("Dietary Tags")
                     .font(.headline)
                 
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 10) {
-                        ForEach(Recipe.DietaryTag.allCases, id: \.self) { tag in
-                            Button(action: {
-                                if formState.selectedDietaryTags.contains(tag) {
-                                    formState.selectedDietaryTags.remove(tag)
-                                } else {
-                                    formState.selectedDietaryTags.insert(tag)
-                                }
-                            }) {
-                                HStack {
-                                    if formState.selectedDietaryTags.contains(tag) {
-                                        Image(systemName: "checkmark")
-                                            .font(.caption)
-                                    }
-                                    Text(tag.rawValue.capitalized)
-                                        .font(.subheadline)
-                                }
-                                .padding(.horizontal, 12)
-                                .padding(.vertical, 8)
-                                .background(
-                                    RoundedRectangle(cornerRadius: 8)
-                                        .fill(formState.selectedDietaryTags.contains(tag) ? AppTheme.primary : Color(.systemGray6))
-                                )
-                                .foregroundColor(formState.selectedDietaryTags.contains(tag) ? .white : .primary)
+                TagsView(selectedTags: $selectedDietaryTags)
+            }
+        }
+    }
+    
+    private var ingredientsStep: some View {
+        VStack(alignment: .leading, spacing: 20) {
+            ForEach(0..<ingredientNames.count, id: \.self) { index in
+                VStack(alignment: .leading, spacing: 12) {
+                    // Header and delete button
+                    HStack {
+                        Text("Ingredient \(index + 1)")
+                            .font(.headline)
+                        
+                        Spacer()
+                        
+                        if ingredientNames.count > 1 {
+                            Button(action: { removeIngredient(at: index) }) {
+                                Image(systemName: "trash")
+                                    .foregroundColor(.red)
                             }
                         }
                     }
+                    
+                    // Ingredient name
+                    TextField("Ingredient name", text: $ingredientNames[index])
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                    
+                    // Amount and unit
+                    HStack {
+                        // Amount
+                        VStack(alignment: .leading) {
+                            Text("Amount")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                            
+                            TextField("1.0", value: $ingredientAmounts[index], formatter: NumberFormatter())
+                                .keyboardType(.decimalPad)
+                                .textFieldStyle(RoundedBorderTextFieldStyle())
+                        }
+                        .frame(maxWidth: .infinity)
+                        
+                        // Unit
+                        VStack(alignment: .leading) {
+                            Text("Unit")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                            
+                            Picker("Unit", selection: $ingredientUnits[index]) {
+                                ForEach(IngredientUnit.allCases, id: \.self) { unit in
+                                    Text(unit.rawValue).tag(unit)
+                                }
+                            }
+                            .pickerStyle(MenuPickerStyle())
+                            .frame(maxWidth: .infinity)
+                            .padding(8)
+                            .background(Color(UIColor.secondarySystemBackground))
+                            .cornerRadius(8)
+                        }
+                        .frame(maxWidth: .infinity)
+                    }
+                    
+                    // Category
+                    VStack(alignment: .leading) {
+                        Text("Category")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        
+                        Picker("Category", selection: $ingredientCategories[index]) {
+                            ForEach(IngredientCategory.allCases, id: \.self) { category in
+                                Text(category.rawValue).tag(category)
+                            }
+                        }
+                        .pickerStyle(MenuPickerStyle())
+                        .frame(maxWidth: .infinity)
+                        .padding(8)
+                        .background(Color(UIColor.secondarySystemBackground))
+                        .cornerRadius(8)
+                    }
                 }
-            }
-        }
-    }
-    
-    // Ingredients Section (Step 2)
-    private var ingredientsSection: some View {
-        VStack(alignment: .leading, spacing: 20) {
-            ForEach(0..<formState.ingredientNames.count, id: \.self) { index in
-                IngredientInputRow(name: $formState.ingredientNames[index], amount: $formState.ingredientAmounts[index], unit: $formState.ingredientUnits[index], category: $formState.ingredientCategories[index], index: index, onDelete: {
-                    // Remove this ingredient
-                    formState.ingredientNames.remove(at: index)
-                    formState.ingredientAmounts.remove(at: index)
-                    formState.ingredientUnits.remove(at: index)
-                    formState.ingredientCategories.remove(at: index)
-                }, showDeleteButton: index > 0)
+                .padding()
+                .background(Color(UIColor.secondarySystemBackground))
+                .cornerRadius(12)
             }
             
             // Add ingredient button
-            Button(action: {
-                // Create a new ingredient
-                formState.ingredientNames.append("")
-                formState.ingredientAmounts.append(1.0)
-                formState.ingredientUnits.append(.pieces)
-                formState.ingredientCategories.append(.other)
-            }) {
-                HStack {
-                    Image(systemName: "plus.circle.fill")
-                    Text("Add Ingredient")
-                }
-                .padding()
-                .frame(maxWidth: .infinity)
-                .background(
-                    RoundedRectangle(cornerRadius: 12)
-                        .stroke(AppTheme.primary, lineWidth: 2)
-                        .background(
-                            RoundedRectangle(cornerRadius: 12)
-                                .fill(Color(.systemBackground))
-                        )
-                )
-                .foregroundColor(AppTheme.primary)
+            Button(action: addIngredient) {
+                Label("Add Ingredient", systemImage: "plus.circle.fill")
             }
+            .padding(.vertical, 10)
+            .frame(maxWidth: .infinity)
+            .background(Color(UIColor.tertiarySystemBackground))
+            .cornerRadius(8)
+            .overlay(
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(Color.accentColor, lineWidth: 1)
+            )
         }
     }
     
-    // Instructions Section (Step 3)
-    private var instructionsSection: some View {
+    private var instructionsStep: some View {
         VStack(alignment: .leading, spacing: 20) {
-            ForEach(0..<formState.instructions.count, id: \.self) { index in
-                VStack(alignment: .leading, spacing: 10) {
-                    // Instruction header and delete button
+            ForEach(0..<instructions.count, id: \.self) { index in
+                VStack(alignment: .leading, spacing: 12) {
+                    // Header and delete button
                     HStack {
                         Text("Step \(index + 1)")
                             .font(.headline)
                         
                         Spacer()
                         
-                        if index > 0 {
-                            Button(action: {
-                                // Remove this instruction
-                                formState.instructions.remove(at: index)
-                            }) {
+                        if instructions.count > 1 {
+                            Button(action: { removeInstruction(at: index) }) {
                                 Image(systemName: "trash")
                                     .foregroundColor(.red)
                             }
@@ -845,134 +795,162 @@ struct RecipeFormView: View {
                     }
                     
                     // Instruction text
-                    VStack(alignment: .leading) {
-                        Text("Description")
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                        
-                        // Use TextEditor for multi-line input
-                        TextEditor(text: $formState.instructions[index])
-                            .frame(minHeight: 100)
-                            .padding(4)
-                            .background(
-                                RoundedRectangle(cornerRadius: 8)
-                                    .stroke(Color(.systemGray3), lineWidth: 1)
-                            )
-                    }
+                    TextEditor(text: $instructions[index])
+                        .frame(minHeight: 100)
+                        .padding(4)
+                        .background(Color(UIColor.systemBackground))
+                        .cornerRadius(8)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 8)
+                                .stroke(Color(UIColor.systemGray4), lineWidth: 1)
+                        )
                 }
                 .padding()
-                .background(
-                    RoundedRectangle(cornerRadius: 12)
-                        .fill(Color(.systemGray6))
-                )
+                .background(Color(UIColor.secondarySystemBackground))
+                .cornerRadius(12)
             }
             
             // Add instruction button
-            Button(action: {
-                // Create a new instruction step
-                formState.instructions.append("")
-            }) {
-                HStack {
-                    Image(systemName: "plus.circle.fill")
-                    Text("Add Step")
-                }
-                .padding()
-                .frame(maxWidth: .infinity)
-                .background(
-                    RoundedRectangle(cornerRadius: 12)
-                        .stroke(AppTheme.primary, lineWidth: 2)
-                        .background(
-                            RoundedRectangle(cornerRadius: 12)
-                                .fill(Color(.systemBackground))
-                        )
-                )
-                .foregroundColor(AppTheme.primary)
+            Button(action: addInstruction) {
+                Label("Add Step", systemImage: "plus.circle.fill")
             }
+            .padding(.vertical, 10)
+            .frame(maxWidth: .infinity)
+            .background(Color(UIColor.tertiarySystemBackground))
+            .cornerRadius(8)
+            .overlay(
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(Color.accentColor, lineWidth: 1)
+            )
         }
     }
     
-    // MARK: - Functions
-    
-    // Build recipe from current form state
-    private func buildRecipeFromState() -> Recipe {
-        // Filter valid ingredients
-        var validIngredients: [Ingredient] = []
-        for i in 0..<formState.ingredientNames.count {
-            if !formState.ingredientNames[i].isEmpty {
-                let ingredient = Ingredient(
-                    name: formState.ingredientNames[i],
-                    amount: formState.ingredientAmounts[i],
-                    unit: formState.ingredientUnits[i],
-                    category: formState.ingredientCategories[i],
-                    isPerishable: false
-                )
-                validIngredients.append(ingredient)
-            }
-        }
-        
-        // Filter valid instructions
-        let validInstructions = formState.instructions.filter { !$0.isEmpty }
-        
-        // Create recipe object
-        return Recipe(
-            name: formState.recipeName,
-            ingredients: validIngredients,
-            instructions: validInstructions, 
-            estimatedTime: TimeInterval((formState.cookingHours * 60 + formState.cookingMinutes) * 60),
-            servings: formState.servings,
-            dietaryTags: formState.selectedDietaryTags,
-            imageName: getDefaultImageName(for: formState.recipeName),
-            isCustomRecipe: true
-        )
+    // MARK: - Helper Methods
+    private func addIngredient() {
+        ingredientNames.append("")
+        ingredientAmounts.append(1.0)
+        ingredientUnits.append(.pieces)
+        ingredientCategories.append(.other)
     }
     
-    // Enhanced save method with success journey
-    private func saveWithSuccessJourney() {
-        // 1. Haptic success feedback
-        UINotificationFeedbackGenerator().notificationOccurred(.success)
-        
-        // 2. Show beautiful success animation
-        withAnimation(.spring()) {
-            showSuccessAnimation = true
-        }
-        
-        // 3. Create the custom recipe
-        let newRecipe = buildRecipeFromState()
-        
-        // 4. Add to suggestions at the top if possible
-        if let viewModel = recipesViewModel {
-            viewModel.addCustomRecipeAndRefresh(newRecipe)
-        } else {
-            // Fallback to regular save
-            onSave(newRecipe)
-        }
-        
-        // 5. Dismiss with elegant timing
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
-            withAnimation {
-                showSuccessAnimation = false
-            }
-            // Offer "View Your Recipe" option
-            showingActionSheet = true
+    private func removeIngredient(at index: Int) {
+        guard ingredientNames.count > 1, index < ingredientNames.count else { return }
+        ingredientNames.remove(at: index)
+        ingredientAmounts.remove(at: index)
+        ingredientUnits.remove(at: index)
+        ingredientCategories.remove(at: index)
+    }
+    
+    private func addInstruction() {
+        instructions.append("")
+    }
+    
+    private func removeInstruction(at index: Int) {
+        guard instructions.count > 1, index < instructions.count else { return }
+        instructions.remove(at: index)
+    }
+    
+    private func goToNextStep() {
+        guard currentStep < 3 else { return }
+        currentStep += 1
+    }
+    
+    private func goToPreviousStep() {
+        guard currentStep > 1 else { return }
+        currentStep -= 1
+    }
+    
+    private func canContinueToNextStep() -> Bool {
+        switch currentStep {
+        case 1: return !recipeName.isEmpty
+        case 2: return ingredientNames.contains { !$0.isEmpty }
+        case 3: return instructions.contains { !$0.isEmpty }
+        default: return false
         }
     }
     
-    // Save recipe function
+    private func validateRecipe() -> Bool {
+        // Check recipe name
+        if recipeName.isEmpty {
+            validationMessage = "Please enter a recipe name"
+            showingValidationAlert = true
+            return false
+        }
+        
+        // Check ingredients
+        let validIngredients = ingredientNames.filter { !$0.isEmpty }
+        if validIngredients.isEmpty {
+            validationMessage = "Please add at least one ingredient"
+            showingValidationAlert = true
+            return false
+        }
+        
+        // Check instructions
+        let validInstructions = instructions.filter { !$0.isEmpty }
+        if validInstructions.isEmpty {
+            validationMessage = "Please add at least one instruction step"
+            showingValidationAlert = true
+            return false
+        }
+        
+        return true
+    }
+    
     private func saveRecipe() {
-        // Dismiss keyboard
-        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+        guard validateRecipe() else { return }
         
-        // Use the form state to validate and build the recipe
-        let (isValid, errorMessage) = formState.isValid()
-        
-        if !isValid {
-            formState.validationMessage = errorMessage ?? "Please check your recipe details"
-            formState.showingValidationAlert = true
-            return
+        // Create ingredients array
+        var recipeIngredients: [Ingredient] = []
+        for i in 0..<ingredientNames.count {
+            if !ingredientNames[i].isEmpty {
+                let ingredient = Ingredient(
+                    name: ingredientNames[i],
+                    amount: ingredientAmounts[i],
+                    unit: ingredientUnits[i],
+                    category: ingredientCategories[i],
+                    isPerishable: false  // Default value
+                )
+                recipeIngredients.append(ingredient)
+            }
         }
         
-        // Use enhanced success journey
-        saveWithSuccessJourney()
+        // Filter out empty instructions
+        let recipeInstructions = instructions.filter { !$0.isEmpty }
+        
+        // Calculate cooking time in seconds
+        let cookingTimeInSeconds = TimeInterval((cookingHours * 60 + cookingMinutes) * 60)
+        
+        // Create recipe
+        let newRecipe = Recipe(
+            name: recipeName,
+            ingredients: recipeIngredients,
+            instructions: recipeInstructions,
+            estimatedTime: cookingTimeInSeconds,
+            servings: servings,
+            dietaryTags: selectedDietaryTags,
+            imageName: getDefaultImageName(for: recipeName),
+            isCustomRecipe: true  // Mark as custom
+        )
+        
+        // Show success animation
+        withAnimation {
+            showingSuccessAlert = true
+        }
+        
+        // Delay for animation
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            // Save recipe
+            if let recipesVM = recipesViewModel {
+                recipesVM.addCustomRecipeAndRefresh(newRecipe)
+            } else {
+                onSave(newRecipe)
+            }
+            
+            // Dismiss after a brief delay to show success animation
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                dismiss()
+            }
+        }
     }
     
     // Helper function to get default image name based on recipe name
@@ -1001,8 +979,42 @@ struct RecipeFormView: View {
     }
 }
 
+// MARK: - Tags View
+struct TagsView: View {
+    @Binding var selectedTags: Set<Recipe.DietaryTag>
+    
+    var body: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 8) {
+                ForEach(Recipe.DietaryTag.allCases, id: \.self) { tag in
+                    Button(action: {
+                        if selectedTags.contains(tag) {
+                            selectedTags.remove(tag)
+                        } else {
+                            selectedTags.insert(tag)
+                        }
+                    }) {
+                        Text(tag.rawValue)
+                            .font(.caption)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 6)
+                            .background(selectedTags.contains(tag) ? AppTheme.primary : Color(UIColor.secondarySystemBackground))
+                            .foregroundColor(selectedTags.contains(tag) ? .white : .primary)
+                            .cornerRadius(20)
+                    }
+                }
+            }
+            .padding(4)
+        }
+        .frame(height: 40)
+    }
+}
+
+// MARK: - Preview
 struct RecipeFormView_Previews: PreviewProvider {
     static var previews: some View {
-        RecipeFormView(onSave: { _ in })
+        NavigationView {
+            RecipeFormView(onSave: { _ in })
+        }
     }
 } 

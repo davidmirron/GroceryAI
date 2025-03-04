@@ -175,17 +175,19 @@ struct RecipesView: View {
                 }
             }
         }) {
-            RecipeFormView(
-                recipesViewModel: recipesViewModel, 
-                onSave: { newRecipe in
-                    // The direct integration with RecipesViewModel now happens in the form
-                    isShowingNewRecipeSheet = false
-                    // After dismissal, scroll to custom recipes
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                        scrollToCustomRecipes = true
-                    }
-                }
-            )
+            NavigationView {
+                RecipeFormView(
+                    onSave: { newRecipe in
+                        // The direct integration with RecipesViewModel now happens in the form
+                        isShowingNewRecipeSheet = false
+                        // After dismissal, scroll to custom recipes
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                            scrollToCustomRecipes = true
+                        }
+                    },
+                    recipesViewModel: recipesViewModel
+                )
+            }
         }
         .onAppear {
             // Check if recipes are loaded
@@ -306,7 +308,7 @@ struct RecipesView: View {
                         // Left side - Image
                         ZStack {
                             RoundedRectangle(cornerRadius: 8)
-                                .fill(Color.gray.opacity(0.2))
+                                .fill(colorScheme == .dark ? Color(.systemGray6) : Color.gray.opacity(0.1))
                                 .frame(width: 80, height: 80)
                             
                             if let imageName = recipe.imageName, !imageName.isEmpty, let uiImage = UIImage(named: imageName) {
@@ -338,6 +340,7 @@ struct RecipesView: View {
                             Text(recipe.name)
                                 .font(.headline)
                                 .lineLimit(1)
+                                .foregroundColor(AppTheme.text)
                             
                             // Recipe metadata in horizontal layout
                             HStack {
@@ -353,13 +356,16 @@ struct RecipesView: View {
                                 Text("\(recipe.servings)")
                                     .font(.caption)
                             }
-                            .foregroundColor(.secondary)
+                            .foregroundColor(AppTheme.textSecondary)
                             
-                            // Match score
+                            // Match score with better dark mode adaptation
                             HStack {
                                 let matchPercentage = Int(recipe.matchScore * 100)
-                                let matchColor: Color = matchPercentage >= 70 ? .green : 
-                                                      matchPercentage >= 40 ? .orange : .red
+                                let matchColor: Color = matchPercentage >= 70 ? 
+                                    (colorScheme == .dark ? AppTheme.success : Color.green) : 
+                                    matchPercentage >= 40 ? 
+                                        (colorScheme == .dark ? Color(hex: "#FB923C") : Color.orange) : 
+                                        (colorScheme == .dark ? AppTheme.error : Color.red)
                                 
                                 Text("\(matchPercentage)% match")
                                     .font(.caption)
@@ -367,7 +373,7 @@ struct RecipesView: View {
                                 
                                 Spacer()
                                 
-                                // Progress bar
+                                // Progress bar with better dark mode adaptation
                                 ZStack(alignment: .leading) {
                                     Rectangle()
                                         .frame(height: 4)
@@ -385,7 +391,7 @@ struct RecipesView: View {
                             if !recipe.missingIngredients.isEmpty {
                                 Text("Missing: \(recipe.missingIngredients.count) items")
                                     .font(.caption)
-                                    .foregroundColor(.orange)
+                                    .foregroundColor(colorScheme == .dark ? Color.orange.opacity(0.8) : Color.orange)
                             }
                         }
                     }
@@ -399,7 +405,8 @@ struct RecipesView: View {
                                         .font(.system(size: 9))
                                         .padding(.horizontal, 6)
                                         .padding(.vertical, 2)
-                                        .background(Color.blue.opacity(0.1))
+                                        .background(AppTheme.chipBackground)
+                                        .foregroundColor(AppTheme.chipText)
                                         .clipShape(Capsule())
                                 }
                             }
@@ -408,8 +415,15 @@ struct RecipesView: View {
                     }
                 }
                 .padding(12)
-                .background(RoundedRectangle(cornerRadius: 12).fill(Color.white))
-                .shadow(color: Color.black.opacity(0.1), radius: 3, x: 0, y: 2)
+                .background(RoundedRectangle(cornerRadius: 12).fill(AppTheme.cardBackground))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(colorScheme == .dark ? AppTheme.borderColor : Color.clear, lineWidth: 1)
+                )
+                .shadow(
+                    color: colorScheme == .dark ? Color.clear : AppTheme.cardShadowColor,
+                    radius: 3, x: 0, y: 2
+                )
             }
             
             // Action buttons
@@ -431,7 +445,7 @@ struct RecipesView: View {
                     .padding(8)
                     .background(Circle().fill(AppTheme.primary))
                     .foregroundColor(.white)
-                    .shadow(color: Color.black.opacity(0.2), radius: 2, x: 0, y: 1)
+                    .shadow(color: colorScheme == .dark ? Color.black.opacity(0.1) : Color.black.opacity(0.2), radius: 2, x: 0, y: 1)
             }
             .buttonStyle(BorderlessButtonStyle())
             
@@ -443,7 +457,7 @@ struct RecipesView: View {
                     .padding(8)
                     .background(Circle().fill(AppTheme.secondary))
                     .foregroundColor(.white)
-                    .shadow(color: Color.black.opacity(0.2), radius: 2, x: 0, y: 1)
+                    .shadow(color: colorScheme == .dark ? Color.black.opacity(0.1) : Color.black.opacity(0.2), radius: 2, x: 0, y: 1)
             }
             .buttonStyle(BorderlessButtonStyle())
         }
