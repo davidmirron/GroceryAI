@@ -69,7 +69,6 @@ struct RecipeFormView: View {
                     .opacity(currentStep == 3 ? 1 : 0)
                     .zIndex(currentStep == 3 ? 1 : 0)
                 }
-                .padding(.bottom, keyboardVisible ? keyboardHeight - 100 : 0)
                 
                 // Bottom navigation controls
                 navigationControls
@@ -168,14 +167,16 @@ struct RecipeFormView: View {
         }
         .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)) { notification in
             if let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect {
-                keyboardHeight = keyboardFrame.height
-                withAnimation {
+                // Get the proper keyboard height without any arbitrary adjustments
+                withAnimation(.easeOut(duration: 0.25)) {
+                    keyboardHeight = keyboardFrame.height
                     keyboardVisible = true
                 }
             }
         }
         .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification)) { _ in
-            withAnimation {
+            withAnimation(.easeOut(duration: 0.25)) {
+                keyboardHeight = 0
                 keyboardVisible = false
             }
         }
@@ -230,11 +231,23 @@ struct RecipeFormView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
                 content()
-                    .padding(.bottom, 100) // Extra padding at bottom for keyboard
+                    .padding(.bottom, 20) // Reduced padding at bottom
+                
+                // Add spacer at the bottom that adapts to keyboard height
+                if keyboardVisible {
+                    Color.clear
+                        .frame(height: keyboardHeight * 0.6) // Only need partial height because ScrollView already helps
+                }
             }
             .padding(.horizontal, 20)
             .padding(.top, 12)
         }
+        .simultaneousGesture(
+            // Add a tap gesture to dismiss keyboard when tapping empty areas
+            TapGesture().onEnded { _ in
+                UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+            }
+        )
         .opacity(stepInTransition && currentStep == step ? 1 : (stepOutTransition && currentStep != step ? 0 : 1))
         .offset(x: stepInTransition && currentStep == step ? 0 : (stepOutTransition && currentStep == step - 1 ? -30 : (stepOutTransition && currentStep == step + 1 ? 30 : 0)))
     }
@@ -917,7 +930,7 @@ struct RecipeFormView: View {
     }
     
     private func removeInstruction(at index: Int) {
-        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+        _ = withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
             instructions.remove(at: index)
         }
         

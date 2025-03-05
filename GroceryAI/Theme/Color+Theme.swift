@@ -35,4 +35,26 @@ extension Color {
     static let accent = Color(red: 1.0, green: 149/255, blue: 0)     // #FF9500
     static let error = Color(red: 1.0, green: 59/255,  blue: 48/255) // #FF3B30
     static let success = Color(red: 48/255, green: 209/255, blue: 88/255) // #30D158
+    
+    // MARK: - Dynamic Colors (new)
+    // These functions return the appropriate color based on the current color scheme
+    static func dynamicBackground(for colorScheme: ColorScheme) -> Color {
+        colorScheme == .dark ? darkBackground : lightBackground
+    }
+    
+    static func dynamicCardBackground(for colorScheme: ColorScheme) -> Color {
+        colorScheme == .dark ? darkCardBg : lightCardBg
+    }
+    
+    static func dynamicText(for colorScheme: ColorScheme) -> Color {
+        colorScheme == .dark ? darkText : lightText
+    }
+    
+    static func dynamicSecondaryText(for colorScheme: ColorScheme) -> Color {
+        colorScheme == .dark ? darkTextSecondary : lightTextSecondary
+    }
+    
+    static func dynamicShadow(for colorScheme: ColorScheme) -> Color {
+        colorScheme == .dark ? darkShadow : lightShadow
+    }
 } 

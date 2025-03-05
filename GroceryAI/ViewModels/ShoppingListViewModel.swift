@@ -341,4 +341,68 @@ class ShoppingListViewModel: ObservableObject {
         let generator = UINotificationFeedbackGenerator()
         generator.notificationOccurred(.success)
     }
+    
+    // MARK: - Item Suggestion Methods
+    // Search for grocery items matching the query
+    func searchForItems(matching query: String) -> [SuggestedItem] {
+        guard query.count >= 2 else { return [] }
+        
+        // Get matches from the database
+        let matches = GroceryItemsDatabase.findMatches(for: query, limit: 8)
+        
+        // Convert to suggestion items
+        let suggestions = matches.map { (key, itemData) -> SuggestedItem in
+            return SuggestedItem(
+                name: itemData.name,
+                category: itemData.category,
+                unit: itemData.unit,
+                amount: itemData.defaultAmount,
+                source: .database
+            )
+        }
+        
+        // Also search recent items
+        let recentItems = Array(items.suffix(10)) // Get the 10 most recent items
+        let recentMatches = recentItems
+            .filter { $0.name.lowercased().contains(query.lowercased()) }
+            .prefix(3)
+            .map { item -> SuggestedItem in
+                return SuggestedItem(
+                    name: item.name,
+                    category: item.category,
+                    unit: item.unit,
+                    amount: item.amount,
+                    source: .recent
+                )
+            }
+        
+        // Combine and limit results
+        var results = Array(recentMatches)
+        results.append(contentsOf: suggestions)
+        return Array(results.prefix(8))
+    }
+    
+    // Model for suggested items
+    struct SuggestedItem: Identifiable {
+        let id = UUID()
+        let name: String
+        let category: IngredientCategory
+        let unit: IngredientUnit
+        let amount: Double
+        let source: SuggestionSource
+        
+        var displayQuantity: String {
+            if amount == floor(amount) {
+                return "\(Int(amount)) \(unit.rawValue)"
+            } else {
+                return String(format: "%.1f \(unit.rawValue)", amount)
+            }
+        }
+    }
+    
+    // Source of suggestion
+    enum SuggestionSource {
+        case recent
+        case database
+    }
 }

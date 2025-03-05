@@ -627,4 +627,168 @@ class RecipesViewModel: ObservableObject {
         let defaultRecipeNames = getDefaultRecipes().map { $0.name }
         return recipeListViewModel.recipes.filter { !defaultRecipeNames.contains($0.name) }
     }
+}
+
+// MARK: - Recipe Matching Extension
+extension RecipesViewModel {
+    // Calculate how well the user's current ingredients match a recipe
+    func calculateMatchScore(for recipe: Recipe, with userIngredients: [GroceryItem]) -> Double {
+        guard !recipe.ingredients.isEmpty else { return 0.0 }
+        
+        var matchedIngredients = 0
+        
+        for recipeIngredient in recipe.ingredients {
+            // Check if the user has this ingredient
+            if userHasIngredient(recipeIngredient, in: userIngredients) {
+                matchedIngredients += 1
+            }
+        }
+        
+        // Calculate the percentage of ingredients matched
+        return Double(matchedIngredients) / Double(recipe.ingredients.count)
+    }
+    
+    // Overloaded version of calculateMatchScore for Ingredient arrays
+    func calculateMatchScore(for recipe: Recipe, with userIngredients: [Ingredient]) -> Double {
+        let groceryItems = convertToGroceryItems(userIngredients)
+        return calculateMatchScore(for: recipe, with: groceryItems)
+    }
+    
+    // Helper to convert Ingredient to GroceryItem for matching
+    private func convertToGroceryItems(_ ingredients: [Ingredient]) -> [GroceryItem] {
+        return ingredients.map { ingredient in
+            GroceryItem(
+                id: ingredient.id,
+                name: ingredient.name,
+                quantity: ingredient.amount,
+                unit: ingredient.unit.rawValue,
+                category: ingredient.category.rawValue,
+                isChecked: false
+            )
+        }
+    }
+    
+    // Overloaded version to support Ingredient arrays
+    func getBestRecipeMatches(with userIngredients: [Ingredient], limit: Int = 3) -> [Recipe] {
+        let groceryItems = convertToGroceryItems(userIngredients)
+        return getBestRecipeMatches(with: groceryItems, limit: limit)
+    }
+    
+    // Determine if the user has a specific ingredient
+    private func userHasIngredient(_ recipeIngredient: Ingredient, in userIngredients: [GroceryItem]) -> Bool {
+        // Look for ingredient by name (case-insensitive)
+        return userIngredients.contains { userIngredient in
+            let shoppingName = userIngredient.name.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
+            let recipeName = recipeIngredient.name.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
+            
+            // Check for exact matches first
+            if shoppingName == recipeName {
+                return true
+            }
+            
+            // Then check for more specific substring matches
+            // Split names into words for better matching
+            let shoppingWords = shoppingName.split(separator: " ")
+            let recipeWords = recipeName.split(separator: " ")
+            
+            // Check if any shopping list word exactly matches any recipe word
+            for shoppingWord in shoppingWords {
+                for recipeWord in recipeWords {
+                    if shoppingWord == recipeWord && shoppingWord.count > 3 {
+                        // Only match on significant words (length > 3)
+                        return true
+                    }
+                }
+            }
+            
+            // Fallback to simple matching for short ingredient names
+            return (shoppingName.contains(recipeName) && recipeName.count > 3) ||
+                   (recipeName.contains(shoppingName) && shoppingName.count > 3)
+        }
+    }
+    
+    // Get list of ingredients needed for a recipe that the user doesn't have
+    func getMissingIngredients(for recipe: Recipe, with userIngredients: [GroceryItem]) -> [Ingredient] {
+        var missingIngredients: [Ingredient] = []
+        
+        for recipeIngredient in recipe.ingredients {
+            if !userHasIngredient(recipeIngredient, in: userIngredients) {
+                missingIngredients.append(recipeIngredient)
+            }
+        }
+        
+        return missingIngredients
+    }
+    
+    // Overloaded version of getMissingIngredients for Ingredient arrays
+    func getMissingIngredients(for recipe: Recipe, with userIngredients: [Ingredient]) -> [Ingredient] {
+        let groceryItems = convertToGroceryItems(userIngredients)
+        return getMissingIngredients(for: recipe, with: groceryItems)
+    }
+    
+    // Get the best recipe matches for the user's current ingredients - WITHOUT modifying state
+    func getBestRecipeMatches(with userIngredients: [GroceryItem], limit: Int = 3) -> [Recipe] {
+        // Calculate match scores for all recipes WITHOUT modifying them
+        let matchedRecipes = recipes.map { recipe -> (Recipe, Double) in
+            let matchScore = calculateMatchScore(for: recipe, with: userIngredients)
+            return (recipe, matchScore)
+        }
+        
+        // Sort by match score (highest first)
+        let sortedMatches = matchedRecipes.sorted { $0.1 > $1.1 }
+        
+        // Return recipes with a reasonable match score
+        return sortedMatches
+            .filter { $0.1 >= 0.3 } // At least 30% match
+            .prefix(limit)
+            .map { (recipe, score) -> Recipe in
+                // Create a copy with updated match score, but DON'T modify the original
+                let updatedRecipe = recipe
+                updatedRecipe.matchScore = score
+                updatedRecipe.missingIngredients = getMissingIngredients(for: recipe, with: userIngredients)
+                return updatedRecipe
+            }
+    }
+    
+    // Get best recipe match (if any exist)
+    func getBestMatch(from userIngredients: [GroceryItem]) -> Recipe? {
+        let topMatches = getBestRecipeMatches(with: userIngredients, limit: 1)
+        return topMatches.first
+    }
+    
+    // Overloaded version for Ingredient arrays
+    func getBestMatch(from userIngredients: [Ingredient]) -> Recipe? {
+        let groceryItems = convertToGroceryItems(userIngredients)
+        return getBestMatch(from: groceryItems)
+    }
+    
+    // Get recipe suggestions based on what's in the shopping list - WITHOUT modifying state
+    func getRecipeSuggestions(from userIngredients: [GroceryItem]) -> [Recipe] {
+        // Just return the best matches without modifying the original recipes array
+        return getBestRecipeMatches(with: userIngredients)
+    }
+    
+    // Overloaded version for Ingredient arrays
+    func getRecipeSuggestions(from userIngredients: [Ingredient]) -> [Recipe] {
+        let groceryItems = convertToGroceryItems(userIngredients)
+        return getRecipeSuggestions(from: groceryItems)
+    }
+    
+    // Call this method from a button action, NOT during view updates
+    func refreshRecipeScores(with userIngredients: [GroceryItem]) {
+        DispatchQueue.main.async {
+            // Calculate new scores
+            let updatedRecipes = self.recipes.map { recipe -> Recipe in
+                let matchScore = self.calculateMatchScore(for: recipe, with: userIngredients)
+                let updatedRecipe = recipe
+                updatedRecipe.matchScore = matchScore
+                updatedRecipe.missingIngredients = self.getMissingIngredients(for: recipe, with: userIngredients)
+                return updatedRecipe
+            }
+            
+            // Only update the published property once, outside of view updates
+            self.objectWillChange.send()
+            self.recipes = updatedRecipes
+        }
+    }
 } 

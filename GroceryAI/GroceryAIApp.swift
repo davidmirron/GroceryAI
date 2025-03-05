@@ -12,6 +12,11 @@ struct GroceryAIApp: App {
     @AppStorage("hasSeenOnboarding") private var hasSeenOnboarding: Bool = false
     @State private var showOnboarding = false
     
+    init() {
+        // Initialize the GroceryItemsDatabase by adding any custom items
+        GroceryItemsDatabase.addCustomItems()
+    }
+    
     var body: some Scene {
         WindowGroup {
             ContentView()

@@ -1,58 +1,53 @@
 import SwiftUI
 
 struct GroceryItemRow: View {
-    let item: Ingredient
-    let isSelected: Bool
-    let isFavorite: Bool
-    let isEditing: Bool
-    let isItemSelected: Bool
-    
-    let onToggle: () -> Void
-    let onDelete: () -> Void
-    let onFavorite: () -> Void
-    let onIncreaseQuantity: () -> Void
-    let onDecreaseQuantity: () -> Void
-    
-    @Environment(\.colorScheme) var colorScheme
-    @State private var isPressed = false
-    @State private var isEditingQuantity = false
-    @State private var customQuantity = ""
     @EnvironmentObject var viewModel: ShoppingListViewModel
+    
+    let item: Ingredient
+    var isSelected: Bool
+    var isFavorite: Bool
+    var isEditing: Bool
+    var isItemSelected: Bool
+    var onToggle: () -> Void
+    var onDelete: () -> Void
+    var onFavorite: () -> Void
+    var onIncreaseQuantity: () -> Void
+    var onDecreaseQuantity: () -> Void
+    
+    @State private var quantity: String = ""
+    @State private var showQuantityEditor = false
+    @Environment(\.colorScheme) private var colorScheme
     
     var body: some View {
         HStack(spacing: 12) {
-            // Checkbox with improved animation
+            // Selection checkbox with improved visual feedback
             Button(action: onToggle) {
                 ZStack {
-                    RoundedRectangle(cornerRadius: 8)
-                        .stroke(isEditing ? (isItemSelected ? AppTheme.primary : AppTheme.borderColor) : 
-                               (isSelected ? AppTheme.primary : AppTheme.borderColor), lineWidth: 2)
-                        .frame(width: 26, height: 26)
-                        .background(
-                            (isEditing ? isItemSelected : isSelected) ? AppTheme.primary : Color.clear,
-                            in: RoundedRectangle(cornerRadius: 8)
-                        )
+                    RoundedRectangle(cornerRadius: 6)
+                        .stroke(isSelected ? AppTheme.primary : AppTheme.textSecondary, lineWidth: 2)
+                        .frame(width: 24, height: 24)
                     
-                    if isEditing ? isItemSelected : isSelected {
-                        Image(systemName: isEditing ? "checkmark" : "checkmark")
+                    if isSelected {
+                        RoundedRectangle(cornerRadius: 6)
+                            .fill(AppTheme.primary)
+                            .frame(width: 24, height: 24)
+                        
+                        Image(systemName: "checkmark")
                             .font(.system(size: 14, weight: .bold))
                             .foregroundColor(.white)
-                            .transition(.scale.combined(with: .opacity))
-                            .animation(.spring(response: 0.2, dampingFraction: 0.7), 
-                                     value: isEditing ? isItemSelected : isSelected)
                     }
                 }
+                .contentShape(Rectangle())
             }
-            .buttonStyle(PlainButtonStyle())
+            .buttonStyle(BorderlessButtonStyle())
             
-            // Item info with favorite indicator and notes
+            // Item details with improved layout
             VStack(alignment: .leading, spacing: 4) {
-                HStack(spacing: 6) {
+                HStack {
                     Text(item.name)
-                        .font(.system(size: 16, weight: .medium))
-                        .foregroundColor(AppTheme.text)
-                        .strikethrough(isSelected && !isEditing)
-                        .opacity((isSelected && !isEditing) ? 0.5 : 1)
+                        .font(.system(size: 17, weight: .medium))
+                        .foregroundColor(isSelected ? AppTheme.textSecondary : .primary)
+                        .strikethrough(isSelected)
                     
                     if isFavorite {
                         Image(systemName: "star.fill")
@@ -60,127 +55,158 @@ struct GroceryItemRow: View {
                             .foregroundColor(.yellow)
                     }
                     
-                    if item.isPerishable {
-                        Image(systemName: "clock")
-                            .font(.system(size: 12))
-                            .foregroundColor(AppTheme.primaryLight)
-                    }
+                    Spacer()
                 }
                 
-                if let notes = item.notes, !notes.isEmpty {
-                    Text(notes)
-                        .font(.caption)
+                // Secondary details with improved information hierarchy
+                HStack {
+                    Text(categoryDisplayName(item.category))
+                        .font(.system(size: 13))
                         .foregroundColor(AppTheme.textSecondary)
-                        .lineLimit(1)
+                    
+                    Text("•")
+                        .font(.system(size: 13))
+                        .foregroundColor(AppTheme.textSecondary)
+                    
+                    // Only show "Added today" if not editing
+                    if !isEditing {
+                        Text("Added today")
+                            .font(.system(size: 13))
+                            .foregroundColor(AppTheme.textSecondary)
+                    }
+                }
+            }
+            .contentShape(Rectangle())
+            .onTapGesture {
+                if isEditing {
+                    onToggle()
                 }
             }
             
             Spacer()
             
-            if !isEditing {
-                // Quantity controls with improved styling
-                if isEditingQuantity {
-                    // Custom quantity input
-                    HStack(spacing: 8) {
-                        TextField("", text: $customQuantity)
-                            .keyboardType(.decimalPad)
-                            .multilineTextAlignment(.center)
-                            .frame(width: 60)
-                            .padding(.vertical, 8)
-                            .background(AppTheme.quantityControlBackground)
-                            .cornerRadius(8)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 8)
-                                    .stroke(AppTheme.borderColor, lineWidth: 1)
-                            )
-                        
-                        Text(item.unit.rawValue)
-                            .font(.system(size: 14))
-                            .foregroundColor(AppTheme.text)
-                        
-                        Button {
-                            if let value = Double(customQuantity), value > 0 {
-                                viewModel.setQuantity(item, to: value)
-                            }
-                            isEditingQuantity = false
-                        } label: {
-                            Image(systemName: "checkmark.circle.fill")
-                                .foregroundColor(AppTheme.primary)
-                                .font(.system(size: 24))
-                        }
-                        .buttonStyle(PlainButtonStyle())
+            // Enhanced quantity controls with better touch targets
+            HStack(spacing: 0) {
+                Button {
+                    // Add subtle haptic feedback
+                    let generator = UIImpactFeedbackGenerator(style: .light)
+                    generator.impactOccurred()
+                    
+                    // Only decrease if quantity would remain above zero
+                    if item.amount > 1 || (item.amount == 1 && item.unit != .pieces) {
+                        onDecreaseQuantity()
                     }
-                } else {
-                    // Standard quantity controls
-                    HStack(spacing: 0) {
-                        Button(action: onDecreaseQuantity) {
-                            Image(systemName: "minus")
-                                .font(.system(size: 14, weight: .medium))
-                                .padding(.horizontal, 10)
-                                .padding(.vertical, 8)
-                                .foregroundColor(AppTheme.primary)
-                        }
-                        .contentShape(Rectangle())
-                        .buttonStyle(PlainButtonStyle())
-                        .opacity(item.amount > 1 ? 1 : 0.5)
-                        .disabled(item.amount <= 1)
-                        
-                        Text("\(Int(item.amount)) \(item.unit.rawValue)")
+                } label: {
+                    Image(systemName: "minus")
+                        .font(.system(size: 16, weight: .medium))
+                        .frame(width: 40, height: 40)
+                        .foregroundColor(item.amount <= 1 && item.unit == .pieces ? 
+                                         (colorScheme == .dark ? .gray : Color.white.opacity(0.6)) : 
+                                         .white)
+                }
+                .disabled(item.amount <= 1 && item.unit == .pieces)
+                
+                // Quantity display with tap to edit
+                Button {
+                    quantity = "\(item.amount)"
+                    showQuantityEditor = true
+                } label: {
+                    HStack(spacing: 4) {
+                        Text("\(formattedQuantity(item.amount))")
                             .font(.system(size: 15, weight: .medium))
-                            .padding(.horizontal, 10)
-                            .foregroundColor(AppTheme.text)
-                            .frame(minWidth: 60)
-                            .onTapGesture {
-                                customQuantity = "\(Int(item.amount))"
-                                isEditingQuantity = true
-                            }
                         
-                        Button(action: onIncreaseQuantity) {
-                            Image(systemName: "plus")
-                                .font(.system(size: 14, weight: .medium))
-                                .padding(.horizontal, 10)
-                                .padding(.vertical, 8)
-                                .foregroundColor(AppTheme.primary)
-                        }
-                        .contentShape(Rectangle())
-                        .buttonStyle(PlainButtonStyle())
+                        Text(unitAbbreviation(for: item.unit))
+                            .font(.system(size: 15))
                     }
-                    .background(AppTheme.quantityControlBackground)
-                    .cornerRadius(10)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 10)
-                            .stroke(AppTheme.borderColor, lineWidth: 1)
-                    )
+                    .foregroundColor(.white)
+                    .frame(minWidth: 60)
+                    .padding(.vertical, 8)
+                }
+                .buttonStyle(BorderlessButtonStyle())
+                
+                Button {
+                    // Add subtle haptic feedback
+                    let generator = UIImpactFeedbackGenerator(style: .light)
+                    generator.impactOccurred()
+                    
+                    onIncreaseQuantity()
+                } label: {
+                    Image(systemName: "plus")
+                        .font(.system(size: 16, weight: .medium))
+                        .frame(width: 40, height: 40)
+                        .foregroundColor(.white)
                 }
             }
+            .padding(.horizontal, 4)
+            .background(
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(colorScheme == .dark ? 
+                          Color(.systemGray5) : 
+                          AppTheme.primary.opacity(0.9))
+                    .shadow(color: Color.black.opacity(colorScheme == .dark ? 0.0 : 0.1), radius: 2, x: 0, y: 1)
+            )
         }
-        .padding(.vertical, 14)
+        .padding(.vertical, 12)
         .padding(.horizontal, 16)
         .background(
-            RoundedRectangle(cornerRadius: 14)
-                .fill(colorScheme == .dark ? AppTheme.cardBackground.opacity(0.8) : AppTheme.cardBackground)
-                .shadow(color: isPressed ? .clear : (colorScheme == .dark ? Color.clear : AppTheme.cardShadowColor), 
-                        radius: isPressed ? 0 : 4,
-                        x: 0, y: isPressed ? 0 : 2)
+            RoundedRectangle(cornerRadius: 0)
+                .fill(isItemSelected && isEditing ? 
+                      AppTheme.primary.opacity(0.1) : 
+                      colorScheme == .dark ? AppTheme.cardBackground : Color(.systemBackground))
         )
-        .scaleEffect(isPressed ? 0.98 : 1.0)
-        .animation(.spring(response: 0.3, dampingFraction: 0.6), value: isPressed)
-        .onTapGesture {
-            withAnimation {
-                isPressed = true
-            }
-            // Add haptic feedback
-            let generator = UIImpactFeedbackGenerator(style: .light)
-            generator.impactOccurred()
+        .contentShape(Rectangle())
+        .alert("Edit Quantity", isPresented: $showQuantityEditor) {
+            TextField("Quantity", text: $quantity)
+                .keyboardType(.decimalPad)
             
-            // Toggle after a short delay
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                onToggle()
-                withAnimation {
-                    isPressed = false
+            Button("Cancel", role: .cancel) { }
+            
+            Button("Save") {
+                if let newAmount = Double(quantity) {
+                    viewModel.setQuantity(item, to: newAmount)
                 }
             }
+        } message: {
+            Text("Enter quantity for \(item.name)")
         }
-        .contentShape(Rectangle())
+    }
+    
+    // Helper function to format quantity (e.g., "1" instead of "1.0")
+    private func formattedQuantity(_ amount: Double) -> String {
+        return amount.truncatingRemainder(dividingBy: 1) == 0 ? 
+            "\(Int(amount))" : 
+            String(format: "%.1f", amount)
+    }
+    
+    // Helper to display abbreviated unit
+    private func unitAbbreviation(for unit: IngredientUnit) -> String {
+        switch unit {
+        case .pieces: return "pcs"
+        case .grams: return "g"
+        case .kilograms: return "kg"
+        case .milliliters: return "ml"
+        case .liters: return "L"
+        case .tablespoons: return "tbsp"
+        case .teaspoons: return "tsp"
+        case .cups: return "cups"
+        case .pounds: return "lb"
+        case .ounces: return "oz"
+        case .units: return "units"
+        }
+    }
+    
+    // Helper to display friendly category names
+    private func categoryDisplayName(_ category: IngredientCategory) -> String {
+        switch category {
+        case .dairy: return "Dairy"
+        case .produce: return "Produce"
+        case .meat: return "Meat"
+        case .pantry: return "Pantry"
+        case .frozen: return "Frozen"
+        case .other: return "Other"
+        case .bakery: return "Bakery"
+        case .seafood: return "Seafood"
+        case .beverages: return "Beverages"
+        }
     }
 } 

@@ -3,10 +3,17 @@ import UIKit // Add this for UIActivityViewController
 
 struct ShoppingListView: View {
     @ObservedObject var viewModel: ShoppingListViewModel
+    @ObservedObject var recipesViewModel: RecipesViewModel
     @State private var searchText = ""
     @State private var showingAddItem = false
     @State private var editMode: EditMode = .inactive
     @State private var selectedItems = Set<UUID>()
+    @State private var showingRecipeDetail = false
+    @State private var selectedRecipe: Recipe?
+    @Environment(\.colorScheme) private var colorScheme
+    
+    // Add state for recipe matches to avoid computing during view updates
+    @State private var recipeMatches: [Recipe] = []
     
     // Quick add items
     let quickAddItems = ["Milk", "Eggs", "Bread", "Bananas"]
@@ -14,72 +21,46 @@ struct ShoppingListView: View {
     // Add a state variable to track the currently selected category
     @State private var selectedCategory: IngredientCategory? = nil
     
-    // Default initializer that creates its own ViewModel (for previews and standalone use)
+    // Default initializer that creates its own ViewModels (for previews and standalone use)
     init() {
-        self.viewModel = ShoppingListViewModel()
+        let shoppingListVM = ShoppingListViewModel()
+        let recipesVM = RecipesViewModel(shoppingListViewModel: shoppingListVM)
+        self.viewModel = shoppingListVM
+        self.recipesViewModel = recipesVM
     }
     
-    // Initializer that accepts a shared ViewModel
+    // Initializer that accepts a shared ShoppingListViewModel
     init(viewModel: ShoppingListViewModel) {
         self.viewModel = viewModel
+        self.recipesViewModel = RecipesViewModel(shoppingListViewModel: viewModel)
+    }
+    
+    // Initializer that accepts both view models
+    init(viewModel: ShoppingListViewModel, recipesViewModel: RecipesViewModel) {
+        self.viewModel = viewModel
+        self.recipesViewModel = recipesViewModel
     }
     
     var body: some View {
         NavigationStack {
-            ZStack {
-                AppTheme.backgroundGreen
+            ZStack(alignment: .bottom) {
+                // Soften the background color in light mode for better contrast
+                AppTheme.backgroundGreen.opacity(colorScheme == .dark ? 1.0 : 0.7)
                     .ignoresSafeArea()
                 
                 VStack(spacing: 0) {
                     // Quick add buttons
                     if editMode == .inactive {
-                        ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: 12) {
-                                // Show undo button if there's a deleted item
-                                if viewModel.canUndo() {
-                                    Button {
-                                        withAnimation {
-                                            viewModel.undoDelete()
-                                        }
-                                    } label: {
-                                        HStack(spacing: 6) {
-                                            Image(systemName: "arrow.uturn.backward")
-                                                .font(.system(size: 14))
-                                            Text("Undo")
-                                                .font(.system(size: 14))
-                                        }
-                                        .foregroundColor(AppTheme.secondary)
-                                        .padding(.horizontal, 12)
-                                        .padding(.vertical, 6)
-                                        .background(AppTheme.secondaryLight.opacity(0.2))
-                                        .clipShape(Capsule())
-                                    }
-                                    .transition(.scale.combined(with: .opacity))
-                                }
-                                
-                                ForEach(quickAddItems, id: \.self) { itemName in
-                                    Button {
-                                        addQuickItem(name: itemName)
-                                    } label: {
-                                        HStack(spacing: 6) {
-                                            Text(itemName)
-                                                .font(.system(size: 16))
-                                                .foregroundColor(AppTheme.primary)
-                                            
-                                            Image(systemName: "plus.circle.fill")
-                                                .font(.system(size: 16))
-                                                .foregroundColor(AppTheme.primary)
-                                        }
-                                        .padding(.horizontal, 16)
-                                        .padding(.vertical, 8)
-                                        .background(AppTheme.primaryLight.opacity(0.2))
-                                        .clipShape(Capsule())
-                                    }
-                                }
+                        QuickAddRow(
+                            viewModel: viewModel,
+                            canUndo: viewModel.canUndo(),
+                            onUndo: {
+                                viewModel.undoDelete()
                             }
-                            .padding(.horizontal, 16)
-                            .padding(.top, 16)
-                        }
+                        )
+                        
+                        // Smart Suggestions
+                        smartSuggestionsSection
                     }
                     
                     // Category-based list with drag to reorder
@@ -98,7 +79,7 @@ struct ShoppingListView: View {
                             grocerySection(title: "Other", items: viewModel.sortedItems(for: .other))
                         }
                         .padding(.horizontal, 16)
-                        .padding(.bottom, 100) // Extra padding for tab bar
+                        .padding(.bottom, 100) // Extra padding for tab bar and completion view
                     }
                     .refreshable {
                         // Simulate refreshing data - add a slight delay to make feedback more noticeable
@@ -113,7 +94,20 @@ struct ShoppingListView: View {
                     }
                 }
                 
-                // Add button (only show when not in edit mode)
+                // Fixed positioning for the meal completion view
+                if editMode == .inactive {
+                    VStack(spacing: 0) {
+                        // Add the meal completion view in its own container
+                        // with fixed positioning at the bottom
+                        MealCompletionView(
+                            viewModel: viewModel,
+                            recipesViewModel: recipesViewModel
+                        )
+                        .padding(.bottom, 100) // Increased space for the floating add button
+                    }
+                }
+                
+                // Floating add button
                 if editMode == .inactive {
                     VStack {
                         Spacer()
@@ -126,7 +120,7 @@ struct ShoppingListView: View {
                                     Circle()
                                         .fill(AppTheme.primary)
                                         .frame(width: 60, height: 60)
-                                        .shadow(color: AppTheme.primary.opacity(0.3), radius: 5, x: 0, y: 3)
+                                        .shadow(color: AppTheme.primary.opacity(0.4), radius: 6, x: 0, y: 3)
                                     
                                     Text("+")
                                         .font(.system(size: 30, weight: .medium))
@@ -134,7 +128,7 @@ struct ShoppingListView: View {
                                 }
                             }
                             .padding(.trailing, 20)
-                            .padding(.bottom, 80)
+                            .padding(.bottom, 30)
                         }
                     }
                 }
@@ -203,7 +197,22 @@ struct ShoppingListView: View {
             .sheet(isPresented: $showingAddItem) {
                 AddItemView(viewModel: viewModel)
             }
+            .sheet(isPresented: $showingRecipeDetail) {
+                if let recipe = selectedRecipe {
+                    NavigationView {
+                        RecipeDetailView(
+                            recipe: recipe,
+                            viewModel: viewModel,
+                            recipesViewModel: recipesViewModel
+                        )
+                    }
+                }
+            }
             .environment(\.editMode, $editMode)
+            .onAppear {
+                // Initialize recipe matches ONCE when the view appears
+                loadRecipeMatches()
+            }
         }
     }
     
@@ -240,9 +249,10 @@ struct ShoppingListView: View {
                         .background(
                             isSelected ? 
                                 AppTheme.primary : 
-                                AppTheme.cardBackground.opacity(0.8)
+                                AppTheme.cardBackground.opacity(colorScheme == .dark ? 0.8 : 1.0)
                         )
                         .cornerRadius(8)
+                        .shadow(color: Color.black.opacity(colorScheme == .dark ? 0.0 : 0.1), radius: 2, x: 0, y: 1)
                     }
                     .buttonStyle(PlainButtonStyle())
                     
@@ -256,8 +266,9 @@ struct ShoppingListView: View {
                             .foregroundColor(AppTheme.textSecondary)
                             .padding(.horizontal, 8)
                             .padding(.vertical, 4)
-                            .background(AppTheme.cardBackground.opacity(0.8))
+                            .background(AppTheme.cardBackground.opacity(colorScheme == .dark ? 0.8 : 1.0))
                             .cornerRadius(4)
+                            .shadow(color: Color.black.opacity(colorScheme == .dark ? 0.0 : 0.05), radius: 1, x: 0, y: 1)
                     }
                 }
                 .padding(.top, 8)
@@ -472,6 +483,125 @@ struct ShoppingListView: View {
            let rootViewController = windowScene.windows.first?.rootViewController {
             rootViewController.present(activityVC, animated: true)
         }
+    }
+    
+    // Load recipe matches safely outside of view updates
+    private func loadRecipeMatches() {
+        DispatchQueue.main.async {
+            self.recipeMatches = recipesViewModel.getBestRecipeMatches(with: viewModel.items)
+        }
+    }
+    
+    // Smart suggestions section
+    private var smartSuggestionsSection: some View {
+        // Use the cached recipe matches instead of computing during view updates
+        return Group {
+            if !recipeMatches.isEmpty {
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("Recipe Matches")
+                        .font(.headline)
+                        .foregroundColor(AppTheme.text)
+                        .padding(.horizontal, 16)
+                        .padding(.top, 8)
+                    
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 16) {
+                            ForEach(recipeMatches) { recipe in
+                                recipeMatchCard(recipe: recipe)
+                            }
+                        }
+                        .padding(.horizontal, 16)
+                        .padding(.bottom, 16)
+                    }
+                }
+                .background(
+                    AppTheme.cardBackground
+                        .opacity(colorScheme == .dark ? 0.5 : 0.95)
+                        .shadow(color: Color.black.opacity(colorScheme == .dark ? 0.0 : 0.07), radius: 3, x: 0, y: 2)
+                )
+                .padding(.bottom, 8)
+            }
+        }
+        .onChange(of: viewModel.items) {
+            // When items change, recalculate recipe matches OUTSIDE of view update cycle
+            loadRecipeMatches()
+        }
+    }
+    
+    // Recipe match card that doesn't modify state during view updates
+    private func recipeMatchCard(recipe: Recipe) -> some View {
+        // All values are calculated from the recipe parameter without modifying state
+        let matchPercentage = Int(recipe.matchScore * 100)
+        let missingIngredients = recipe.missingIngredients
+        
+        return Button {
+            selectedRecipe = recipe
+            showingRecipeDetail = true
+        } label: {
+            VStack(alignment: .leading, spacing: 8) {
+                HStack {
+                    Text(recipe.name)
+                        .font(.system(size: 16, weight: .medium))
+                        .foregroundColor(AppTheme.text)
+                    
+                    Spacer()
+                    
+                    Text("\(matchPercentage)%")
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(
+                            RoundedRectangle(cornerRadius: 10)
+                                .fill(
+                                    matchPercentage >= 70 ? Color.green :
+                                    matchPercentage >= 40 ? Color.orange : Color.red
+                                )
+                        )
+                }
+                
+                Text("\(recipe.ingredients.count - missingIngredients.count) of \(recipe.ingredients.count) ingredients")
+                    .font(.system(size: 14))
+                    .foregroundColor(AppTheme.textSecondary)
+            }
+            .padding(12)
+            .frame(width: 200)
+            .background(
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(AppTheme.cardBackground)
+                    .shadow(color: Color.black.opacity(colorScheme == .dark ? 0.1 : 0.15), radius: 4, x: 0, y: 2)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(Color.gray.opacity(colorScheme == .dark ? 0.1 : 0.2), lineWidth: 0.5)
+                    )
+            )
+        }
+        .contextMenu {
+            Button {
+                addMissingIngredients(from: recipe)
+            } label: {
+                Label("Add Missing Items", systemImage: "cart.badge.plus")
+            }
+            
+            Button {
+                selectedRecipe = recipe
+                showingRecipeDetail = true
+            } label: {
+                Label("View Recipe", systemImage: "doc.text")
+            }
+        }
+    }
+    
+    // Updated helper method that safely adds missing ingredients
+    private func addMissingIngredients(from recipe: Recipe) {
+        // Use the pre-calculated missing ingredients rather than calculating during view update
+        for ingredient in recipe.missingIngredients {
+            viewModel.addItem(ingredient)
+        }
+        
+        // Add haptic feedback
+        let generator = UIImpactFeedbackGenerator(style: .medium)
+        generator.impactOccurred()
     }
 }
 

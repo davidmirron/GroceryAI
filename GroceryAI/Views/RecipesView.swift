@@ -94,7 +94,7 @@ struct RecipesView: View {
                                 }
                                 .padding(.bottom, 20)
                             }
-                            .onChange(of: scrollToCustomRecipes) { shouldScroll in
+                            .onChange(of: scrollToCustomRecipes) { oldValue, shouldScroll in
                                 if shouldScroll {
                                     withAnimation {
                                         scrollProxy.scrollTo("customRecipes", anchor: .top)
@@ -197,7 +197,7 @@ struct RecipesView: View {
             // Generate recipe suggestions based on shopping list
             refreshRecipes()
         }
-        .onChange(of: shoppingListViewModel.items) { _ in
+        .onChange(of: shoppingListViewModel.items) {
             // Then always refresh with current shopping list items
             refreshRecipes()
         }

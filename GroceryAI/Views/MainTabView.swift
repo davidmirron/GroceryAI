@@ -13,7 +13,10 @@ struct MainTabView: View {
         
         TabView(selection: $selectedTab) {
             NavigationStack {
-                ShoppingListView(viewModel: shoppingListViewModel)
+                ShoppingListView(
+                    viewModel: shoppingListViewModel,
+                    recipesViewModel: recipesViewModel
+                )
             }
             .tabItem {
                 Label("List", systemImage: "list.bullet")
