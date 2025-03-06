@@ -125,6 +125,28 @@ struct AppTheme {
         Color.yellow
     }
     
+    // MARK: - Recipe Match Colors
+    static var highMatchColor: Color {
+        Color(UIColor { $0.userInterfaceStyle == .dark ? 
+              UIColor(hex: "#4ADE80") : // #4ADE80 - Vibrant green for dark mode
+              UIColor(hex: "#34D399")   // #34D399 - Softer green for light mode
+        })
+    }
+    
+    static var mediumMatchColor: Color {
+        Color(UIColor { $0.userInterfaceStyle == .dark ? 
+              UIColor(hex: "#FB923C") : // #FB923C - Strong amber for dark mode
+              UIColor(hex: "#FBBF24")   // #FBBF24 - Softer amber for light mode
+        })
+    }
+    
+    static var lowMatchColor: Color {
+        Color(UIColor { $0.userInterfaceStyle == .dark ? 
+              UIColor(hex: "#FF6B6B") : // #FF6B6B - Vibrant red for dark mode
+              UIColor(hex: "#F87171")   // #F87171 - Softer red for light mode
+        })
+    }
+    
     // MARK: - Typography
     static let titleStyle = Font.system(size: 22, weight: .bold)
     static let headlineStyle = Font.system(size: 18, weight: .semibold)

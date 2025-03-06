@@ -1,0 +1,1424 @@
+[
+  {
+    "id": "5c1bc279-4a91-4a62-b982-6a0c8d2e0b17",
+    "name": "Classic Pancakes",
+    "category": "Breakfast",
+    "ingredients": [
+      {
+        "name": "All-Purpose Flour",
+        "amount": 250.0,
+        "unit": "g",
+        "category": "Pantry",
+        "isPerishable": false,
+        "shelfLife": 365
+      },
+      {
+        "name": "Milk",
+        "amount": 300.0,
+        "unit": "ml",
+        "category": "Dairy",
+        "isPerishable": true,
+        "shelfLife": 7
+      },
+      {
+        "name": "Eggs",
+        "amount": 2.0,
+        "unit": "pcs",
+        "category": "Dairy",
+        "isPerishable": true,
+        "shelfLife": 21
+      },
+      {
+        "name": "Sugar",
+        "amount": 2.0,
+        "unit": "tbsp",
+        "category": "Pantry",
+        "isPerishable": false,
+        "shelfLife": 730
+      },
+      {
+        "name": "Baking Powder",
+        "amount": 1.0,
+        "unit": "tbsp",
+        "category": "Pantry",
+        "isPerishable": false,
+        "shelfLife": 365
+      },
+      {
+        "name": "Butter",
+        "amount": 30.0,
+        "unit": "g",
+        "category": "Dairy",
+        "isPerishable": true,
+        "shelfLife": 30
+      },
+      {
+        "name": "Vanilla Extract",
+        "amount": 1.0,
+        "unit": "tsp",
+        "category": "Pantry",
+        "isPerishable": false,
+        "shelfLife": 730
+      }
+    ],
+    "instructions": [
+      "Whisk flour, sugar, baking powder, and salt in a large bowl",
+      "In another bowl, whisk milk, eggs, melted butter, and vanilla",
+      "Pour wet ingredients into dry ingredients and stir until just combined",
+      "Heat a lightly oiled griddle or pan over medium-high heat",
+      "Pour batter onto the griddle, using approximately 1/4 cup for each pancake",
+      "Cook until bubbles form on the surface, then flip and cook until golden brown",
+      "Serve with maple syrup and fresh berries"
+    ],
+    "prepTime": 10,
+    "cookTime": 15,
+    "servings": 4,
+    "nutritionInfo": {
+      "calories": 350,
+      "protein": 10,
+      "carbs": 45,
+      "fat": 12
+    },
+    "dietaryTags": [
+      "vegetarian"
+    ],
+    "difficulty": "Easy",
+    "imageFileName": "pancakes",
+    "source": "Family Recipe",
+    "imageName": "pancakes"
+  },
+  {
+    "id": "8a9d2c8f-4b7c-4f9d-b3e5-1a6d7b9c8d2e",
+    "name": "Spaghetti Bolognese",
+    "category": "Main Course",
+    "ingredients": [
+      {
+        "name": "Ground Beef",
+        "amount": 500.0,
+        "unit": "g",
+        "category": "Meat",
+        "isPerishable": true,
+        "shelfLife": 3
+      },
+      {
+        "name": "Onion",
+        "amount": 1.0,
+        "unit": "pcs",
+        "category": "Produce",
+        "isPerishable": true,
+        "shelfLife": 14
+      },
+      {
+        "name": "Garlic",
+        "amount": 3.0,
+        "unit": "pcs",
+        "category": "Produce",
+        "isPerishable": true,
+        "shelfLife": 21
+      },
+      {
+        "name": "Carrot",
+        "amount": 1.0,
+        "unit": "pcs",
+        "category": "Produce",
+        "isPerishable": true,
+        "shelfLife": 21
+      },
+      {
+        "name": "Celery",
+        "amount": 1.0,
+        "unit": "pcs",
+        "category": "Produce",
+        "isPerishable": true,
+        "shelfLife": 14
+      },
+      {
+        "name": "Tomato Paste",
+        "amount": 2.0,
+        "unit": "tbsp",
+        "category": "Pantry",
+        "isPerishable": false,
+        "shelfLife": 365
+      },
+      {
+        "name": "Canned Tomatoes",
+        "amount": 400.0,
+        "unit": "g",
+        "category": "Pantry",
+        "isPerishable": false,
+        "shelfLife": 730
+      },
+      {
+        "name": "Red Wine",
+        "amount": 100.0,
+        "unit": "ml",
+        "category": "Pantry",
+        "isPerishable": false,
+        "shelfLife": 365
+      },
+      {
+        "name": "Beef Stock",
+        "amount": 250.0,
+        "unit": "ml",
+        "category": "Pantry",
+        "isPerishable": false,
+        "shelfLife": 365
+      },
+      {
+        "name": "Spaghetti",
+        "amount": 350.0,
+        "unit": "g",
+        "category": "Pantry",
+        "isPerishable": false,
+        "shelfLife": 730
+      },
+      {
+        "name": "Parmesan Cheese",
+        "amount": 50.0,
+        "unit": "g",
+        "category": "Dairy",
+        "isPerishable": true,
+        "shelfLife": 60
+      },
+      {
+        "name": "Olive Oil",
+        "amount": 2.0,
+        "unit": "tbsp",
+        "category": "Pantry",
+        "isPerishable": false,
+        "shelfLife": 365
+      },
+      {
+        "name": "Bay Leaf",
+        "amount": 1.0,
+        "unit": "pcs",
+        "category": "Pantry",
+        "isPerishable": false,
+        "shelfLife": 365
+      },
+      {
+        "name": "Oregano",
+        "amount": 1.0,
+        "unit": "tsp",
+        "category": "Pantry",
+        "isPerishable": false,
+        "shelfLife": 365
+      },
+      {
+        "name": "Salt",
+        "amount": 1.0,
+        "unit": "tsp",
+        "category": "Pantry",
+        "isPerishable": false,
+        "shelfLife": 1825
+      },
+      {
+        "name": "Black Pepper",
+        "amount": 0.5,
+        "unit": "tsp",
+        "category": "Pantry",
+        "isPerishable": false,
+        "shelfLife": 730
+      }
+    ],
+    "instructions": [
+      "Heat olive oil in a large pan over medium heat",
+      "Add chopped onion, carrot, and celery; cook until softened",
+      "Add minced garlic and cook for another minute",
+      "Increase heat and add ground beef, breaking it up with a wooden spoon",
+      "Cook until browned, then add tomato paste and stir",
+      "Pour in red wine and let it reduce for 2-3 minutes",
+      "Add canned tomatoes, beef stock, bay leaf, and oregano",
+      "Season with salt and pepper, then simmer for 1-1.5 hours, stirring occasionally",
+      "Meanwhile, cook spaghetti according to package instructions",
+      "Drain pasta and serve topped with bolognese sauce and grated parmesan"
+    ],
+    "prepTime": 20,
+    "cookTime": 90,
+    "servings": 4,
+    "nutritionInfo": {
+      "calories": 650,
+      "protein": 35,
+      "carbs": 70,
+      "fat": 25
+    },
+    "dietaryTags": [],
+    "difficulty": "Medium",
+    "imageFileName": "spaghetti",
+    "source": "Italian Cookbook",
+    "imageName": "pasta"
+  },
+  {
+    "id": "3e4f5a6b-7c8d-9e0f-1a2b-3c4d5e6f7a8b",
+    "name": "Avocado Toast",
+    "category": "Breakfast",
+    "ingredients": [
+      {
+        "name": "Whole Grain Bread",
+        "amount": 2.0,
+        "unit": "pcs",
+        "category": "Bakery",
+        "isPerishable": true,
+        "shelfLife": 7
+      },
+      {
+        "name": "Avocado",
+        "amount": 1.0,
+        "unit": "pcs",
+        "category": "Produce",
+        "isPerishable": true,
+        "shelfLife": 5
+      },
+      {
+        "name": "Cherry Tomatoes",
+        "amount": 5.0,
+        "unit": "pcs",
+        "category": "Produce",
+        "isPerishable": true,
+        "shelfLife": 7
+      },
+      {
+        "name": "Lemon Juice",
+        "amount": 1.0,
+        "unit": "tsp",
+        "category": "Produce",
+        "isPerishable": true,
+        "shelfLife": 14
+      },
+      {
+        "name": "Olive Oil",
+        "amount": 1.0,
+        "unit": "tsp",
+        "category": "Pantry",
+        "isPerishable": false,
+        "shelfLife": 365
+      },
+      {
+        "name": "Salt",
+        "amount": 0.25,
+        "unit": "tsp",
+        "category": "Pantry",
+        "isPerishable": false,
+        "shelfLife": 1825
+      },
+      {
+        "name": "Red Pepper Flakes",
+        "amount": 0.25,
+        "unit": "tsp",
+        "category": "Pantry",
+        "isPerishable": false,
+        "shelfLife": 730
+      }
+    ],
+    "instructions": [
+      "Toast the bread until golden and crisp",
+      "Cut the avocado in half, remove the pit, and scoop the flesh into a bowl",
+      "Add lemon juice, salt, and mash with a fork until desired consistency",
+      "Spread the avocado mixture onto the toast",
+      "Slice cherry tomatoes in half and arrange on top",
+      "Drizzle with olive oil and sprinkle with red pepper flakes"
+    ],
+    "prepTime": 5,
+    "cookTime": 5,
+    "servings": 2,
+    "nutritionInfo": {
+      "calories": 220,
+      "protein": 5,
+      "carbs": 22,
+      "fat": 15
+    },
+    "dietaryTags": [
+      "vegetarian",
+      "vegan"
+    ],
+    "difficulty": "Easy",
+    "imageFileName": "avocado_toast",
+    "source": "Healthy Breakfast Collection",
+    "imageName": "breakfast"
+  },
+  {
+    "id": "7k8l9m0n-1o2p-3q4r-5s6t-7u8v9w0x1y2z",
+    "name": "Beef Tacos",
+    "category": "Main Course",
+    "ingredients": [
+      {
+        "name": "Ground Beef",
+        "amount": 500.0,
+        "unit": "g",
+        "category": "Meat",
+        "isPerishable": true,
+        "shelfLife": 3
+      },
+      {
+        "name": "Taco Shells",
+        "amount": 12.0,
+        "unit": "pcs",
+        "category": "Pantry",
+        "isPerishable": false,
+        "shelfLife": 180
+      },
+      {
+        "name": "Onion",
+        "amount": 1.0,
+        "unit": "pcs",
+        "category": "Produce",
+        "isPerishable": true,
+        "shelfLife": 14
+      },
+      {
+        "name": "Garlic",
+        "amount": 2.0,
+        "unit": "pcs",
+        "category": "Produce",
+        "isPerishable": true,
+        "shelfLife": 21
+      },
+      {
+        "name": "Chili Powder",
+        "amount": 2.0,
+        "unit": "tsp",
+        "category": "Pantry",
+        "isPerishable": false,
+        "shelfLife": 730
+      },
+      {
+        "name": "Cumin",
+        "amount": 1.0,
+        "unit": "tsp",
+        "category": "Pantry",
+        "isPerishable": false,
+        "shelfLife": 365
+      },
+      {
+        "name": "Salt",
+        "amount": 1.0,
+        "unit": "tsp",
+        "category": "Pantry",
+        "isPerishable": false,
+        "shelfLife": 1825
+      },
+      {
+        "name": "Cheddar Cheese",
+        "amount": 150.0,
+        "unit": "g",
+        "category": "Dairy",
+        "isPerishable": true,
+        "shelfLife": 30
+      },
+      {
+        "name": "Lettuce",
+        "amount": 1.0,
+        "unit": "pcs",
+        "category": "Produce",
+        "isPerishable": true,
+        "shelfLife": 7
+      },
+      {
+        "name": "Tomato",
+        "amount": 2.0,
+        "unit": "pcs",
+        "category": "Produce",
+        "isPerishable": true,
+        "shelfLife": 7
+      },
+      {
+        "name": "Sour Cream",
+        "amount": 100.0,
+        "unit": "g",
+        "category": "Dairy",
+        "isPerishable": true,
+        "shelfLife": 14
+      },
+      {
+        "name": "Vegetable Oil",
+        "amount": 1.0,
+        "unit": "tbsp",
+        "category": "Pantry",
+        "isPerishable": false,
+        "shelfLife": 365
+      }
+    ],
+    "instructions": [
+      "Heat vegetable oil in a large skillet over medium heat",
+      "Finely chop onion and mince garlic, then add to the skillet and saut\u00e9 until softened, about 3 minutes",
+      "Add ground beef and cook until browned, breaking it apart with a spoon, about 6-8 minutes",
+      "Stir in chili powder, cumin, and salt, cooking for another 2 minutes",
+      "Warm taco shells according to package instructions",
+      "Shred lettuce, dice tomatoes, and grate cheddar cheese",
+      "Assemble tacos by spooning beef mixture into shells, then topping with lettuce, tomatoes, cheese, and a dollop of sour cream",
+      "Serve immediately"
+    ],
+    "prepTime": 15,
+    "cookTime": 15,
+    "servings": 4,
+    "nutritionInfo": {
+      "calories": 600,
+      "protein": 30,
+      "carbs": 40,
+      "fat": 35
+    },
+    "dietaryTags": [
+      "gluten-free"
+    ],
+    "difficulty": "Easy",
+    "imageFileName": "beef_tacos",
+    "source": "Mexican Cuisine",
+    "imageName": "tacos"
+  },
+  {
+    "id": "6j7k8l9m-0n1o-2p3q-4r5s-6t7u8v9w0x1y",
+    "name": "Apple Pie",
+    "category": "Dessert",
+    "ingredients": [
+      {
+        "name": "All-Purpose Flour",
+        "amount": 300.0,
+        "unit": "g",
+        "category": "Pantry",
+        "isPerishable": false,
+        "shelfLife": 365
+      },
+      {
+        "name": "Unsalted Butter",
+        "amount": 200.0,
+        "unit": "g",
+        "category": "Dairy",
+        "isPerishable": true,
+        "shelfLife": 90
+      },
+      {
+        "name": "Salt",
+        "amount": 0.5,
+        "unit": "tsp",
+        "category": "Pantry",
+        "isPerishable": false,
+        "shelfLife": 1825
+      },
+      {
+        "name": "Ice Water",
+        "amount": 100.0,
+        "unit": "ml",
+        "category": "Other",
+        "isPerishable": false,
+        "shelfLife": 0
+      },
+      {
+        "name": "Apples",
+        "amount": 6.0,
+        "unit": "pcs",
+        "category": "Produce",
+        "isPerishable": true,
+        "shelfLife": 14
+      },
+      {
+        "name": "Granulated Sugar",
+        "amount": 150.0,
+        "unit": "g",
+        "category": "Pantry",
+        "isPerishable": false,
+        "shelfLife": 730
+      },
+      {
+        "name": "Brown Sugar",
+        "amount": 100.0,
+        "unit": "g",
+        "category": "Pantry",
+        "isPerishable": false,
+        "shelfLife": 365
+      },
+      {
+        "name": "Cinnamon",
+        "amount": 1.0,
+        "unit": "tsp",
+        "category": "Pantry",
+        "isPerishable": false,
+        "shelfLife": 365
+      },
+      {
+        "name": "Nutmeg",
+        "amount": 0.25,
+        "unit": "tsp",
+        "category": "Pantry",
+        "isPerishable": false,
+        "shelfLife": 730
+      },
+      {
+        "name": "Lemon Juice",
+        "amount": 1.0,
+        "unit": "tbsp",
+        "category": "Produce",
+        "isPerishable": true,
+        "shelfLife": 14
+      },
+      {
+        "name": "Egg",
+        "amount": 1.0,
+        "unit": "pcs",
+        "category": "Dairy",
+        "isPerishable": true,
+        "shelfLife": 21
+      }
+    ],
+    "instructions": [
+      "In a bowl, combine flour and salt, then cut in cold butter until mixture resembles coarse crumbs",
+      "Add ice water gradually, mixing until dough forms; divide into two disks and chill for 30 minutes",
+      "Preheat oven to 375\u00b0F (190\u00b0C)",
+      "Peel, core, and slice apples, then toss with granulated sugar, brown sugar, cinnamon, nutmeg, and lemon juice",
+      "Roll out one dough disk and fit into a 9-inch pie dish",
+      "Add apple filling, then roll out second dough disk and place over filling; crimp edges to seal",
+      "Beat egg and brush over crust for a golden finish",
+      "Cut slits in the top crust to vent steam",
+      "Bake for 50-60 minutes until crust is golden and filling is bubbly",
+      "Cool before serving"
+    ],
+    "prepTime": 30,
+    "cookTime": 60,
+    "servings": 8,
+    "nutritionInfo": {
+      "calories": 400,
+      "protein": 4,
+      "carbs": 60,
+      "fat": 18
+    },
+    "dietaryTags": [
+      "vegetarian"
+    ],
+    "difficulty": "Medium",
+    "imageFileName": "apple_pie",
+    "source": "American Classics",
+    "imageName": "dessert"
+  },
+  {
+    "id": "5i6j7k8l-9m0n-1o2p-3q4r-5s6t7u8v9w0x",
+    "name": "Bruschetta",
+    "category": "Appetizer",
+    "ingredients": [
+      {
+        "name": "Baguette",
+        "amount": 1.0,
+        "unit": "pcs",
+        "category": "Pantry",
+        "isPerishable": true,
+        "shelfLife": 2
+      },
+      {
+        "name": "Tomatoes",
+        "amount": 4.0,
+        "unit": "pcs",
+        "category": "Produce",
+        "isPerishable": true,
+        "shelfLife": 7
+      },
+      {
+        "name": "Garlic",
+        "amount": 2.0,
+        "unit": "pcs",
+        "category": "Produce",
+        "isPerishable": true,
+        "shelfLife": 21
+      },
+      {
+        "name": "Fresh Basil",
+        "amount": 20.0,
+        "unit": "g",
+        "category": "Produce",
+        "isPerishable": true,
+        "shelfLife": 5
+      },
+      {
+        "name": "Olive Oil",
+        "amount": 3.0,
+        "unit": "tbsp",
+        "category": "Pantry",
+        "isPerishable": false,
+        "shelfLife": 365
+      },
+      {
+        "name": "Balsamic Vinegar",
+        "amount": 1.0,
+        "unit": "tbsp",
+        "category": "Pantry",
+        "isPerishable": false,
+        "shelfLife": 1095
+      },
+      {
+        "name": "Salt",
+        "amount": 0.5,
+        "unit": "tsp",
+        "category": "Pantry",
+        "isPerishable": false,
+        "shelfLife": 1825
+      },
+      {
+        "name": "Black Pepper",
+        "amount": 0.25,
+        "unit": "tsp",
+        "category": "Pantry",
+        "isPerishable": false,
+        "shelfLife": 730
+      }
+    ],
+    "instructions": [
+      "Preheat oven to 400\u00b0F (200\u00b0C)",
+      "Slice baguette into 1/2-inch thick pieces and place on a baking sheet",
+      "Brush slices with 1 tbsp olive oil and bake until golden, about 5-7 minutes",
+      "Dice tomatoes and chop basil finely",
+      "In a bowl, mix tomatoes, basil, minced garlic, remaining olive oil, balsamic vinegar, salt, and pepper",
+      "Spoon tomato mixture onto toasted bread slices",
+      "Serve immediately"
+    ],
+    "prepTime": 10,
+    "cookTime": 7,
+    "servings": 6,
+    "nutritionInfo": {
+      "calories": 150,
+      "protein": 3,
+      "carbs": 20,
+      "fat": 6
+    },
+    "dietaryTags": [
+      "vegetarian",
+      "vegan"
+    ],
+    "difficulty": "Easy",
+    "imageFileName": "bruschetta",
+    "source": "Italian Cuisine",
+    "imageName": "appetizer"
+  },
+  {
+    "id": "4h5i6j7k-8l9m-0n1o-2p3q-4r5s6t7u8v9w",
+    "name": "Mojito",
+    "category": "Beverage",
+    "ingredients": [
+      {
+        "name": "White Rum",
+        "amount": 60.0,
+        "unit": "ml",
+        "category": "Alcohol",
+        "isPerishable": false,
+        "shelfLife": 0
+      },
+      {
+        "name": "Fresh Mint Leaves",
+        "amount": 10.0,
+        "unit": "pcs",
+        "category": "Produce",
+        "isPerishable": true,
+        "shelfLife": 7
+      },
+      {
+        "name": "Lime",
+        "amount": 1.0,
+        "unit": "pcs",
+        "category": "Produce",
+        "isPerishable": true,
+        "shelfLife": 14
+      },
+      {
+        "name": "Sugar",
+        "amount": 2.0,
+        "unit": "tsp",
+        "category": "Pantry",
+        "isPerishable": false,
+        "shelfLife": 730
+      },
+      {
+        "name": "Soda Water",
+        "amount": 120.0,
+        "unit": "ml",
+        "category": "Beverage",
+        "isPerishable": false,
+        "shelfLife": 365
+      },
+      {
+        "name": "Ice",
+        "amount": 1.0,
+        "unit": "cup",
+        "category": "Other",
+        "isPerishable": false,
+        "shelfLife": 0
+      }
+    ],
+    "instructions": [
+      "Place mint leaves and sugar in a glass and muddle gently to release oils",
+      "Cut lime in half, squeeze juice into the glass, and add one half as a garnish",
+      "Add rum and stir until sugar dissolves",
+      "Fill glass with ice",
+      "Top with soda water and stir gently",
+      "Garnish with additional mint leaves and serve"
+    ],
+    "prepTime": 5,
+    "cookTime": 0,
+    "servings": 1,
+    "nutritionInfo": {
+      "calories": 150,
+      "protein": 0,
+      "carbs": 10,
+      "fat": 0
+    },
+    "dietaryTags": [
+      "vegan",
+      "gluten-free"
+    ],
+    "difficulty": "Easy",
+    "imageFileName": "mojito",
+    "source": "Cocktail Classics",
+    "imageName": "beverage"
+  },
+  {
+    "id": "3g4h5i6j-7k8l-9m0n-1o2p-3q4r5s6t7u8v",
+    "name": "Lasagna",
+    "category": "Main Course",
+    "ingredients": [
+      {
+        "name": "Lasagna Noodles",
+        "amount": 300.0,
+        "unit": "g",
+        "category": "Pantry",
+        "isPerishable": false,
+        "shelfLife": 730
+      },
+      {
+        "name": "Ground Beef",
+        "amount": 500.0,
+        "unit": "g",
+        "category": "Meat",
+        "isPerishable": true,
+        "shelfLife": 3
+      },
+      {
+        "name": "Onion",
+        "amount": 1.0,
+        "unit": "pcs",
+        "category": "Produce",
+        "isPerishable": true,
+        "shelfLife": 14
+      },
+      {
+        "name": "Garlic",
+        "amount": 3.0,
+        "unit": "pcs",
+        "category": "Produce",
+        "isPerishable": true,
+        "shelfLife": 21
+      },
+      {
+        "name": "Canned Crushed Tomatoes",
+        "amount": 800.0,
+        "unit": "g",
+        "category": "Pantry",
+        "isPerishable": false,
+        "shelfLife": 730
+      },
+      {
+        "name": "Tomato Paste",
+        "amount": 2.0,
+        "unit": "tbsp",
+        "category": "Pantry",
+        "isPerishable": false,
+        "shelfLife": 365
+      },
+      {
+        "name": "Dried Basil",
+        "amount": 1.0,
+        "unit": "tsp",
+        "category": "Pantry",
+        "isPerishable": false,
+        "shelfLife": 365
+      },
+      {
+        "name": "Dried Oregano",
+        "amount": 1.0,
+        "unit": "tsp",
+        "category": "Pantry",
+        "isPerishable": false,
+        "shelfLife": 365
+      },
+      {
+        "name": "Salt",
+        "amount": 1.5,
+        "unit": "tsp",
+        "category": "Pantry",
+        "isPerishable": false,
+        "shelfLife": 1825
+      },
+      {
+        "name": "Black Pepper",
+        "amount": 0.5,
+        "unit": "tsp",
+        "category": "Pantry",
+        "isPerishable": false,
+        "shelfLife": 730
+      },
+      {
+        "name": "Ricotta Cheese",
+        "amount": 400.0,
+        "unit": "g",
+        "category": "Dairy",
+        "isPerishable": true,
+        "shelfLife": 14
+      },
+      {
+        "name": "Mozzarella Cheese",
+        "amount": 300.0,
+        "unit": "g",
+        "category": "Dairy",
+        "isPerishable": true,
+        "shelfLife": 14
+      },
+      {
+        "name": "Parmesan Cheese",
+        "amount": 100.0,
+        "unit": "g",
+        "category": "Dairy",
+        "isPerishable": true,
+        "shelfLife": 30
+      },
+      {
+        "name": "Egg",
+        "amount": 1.0,
+        "unit": "pcs",
+        "category": "Dairy",
+        "isPerishable": true,
+        "shelfLife": 21
+      },
+      {
+        "name": "Olive Oil",
+        "amount": 1.0,
+        "unit": "tbsp",
+        "category": "Pantry",
+        "isPerishable": false,
+        "shelfLife": 365
+      }
+    ],
+    "instructions": [
+      "Cook lasagna noodles in boiling salted water until al dente, then drain and set aside",
+      "Heat olive oil in a large skillet, add chopped onion and minced garlic, and saut\u00e9 until softened, about 3 minutes",
+      "Add ground beef and cook until browned, about 6-8 minutes",
+      "Stir in crushed tomatoes, tomato paste, basil, oregano, 1 tsp salt, and pepper; simmer for 20 minutes",
+      "In a bowl, mix ricotta, egg, and remaining 0.5 tsp salt",
+      "Preheat oven to 375\u00b0F (190\u00b0C)",
+      "In a 9x13-inch baking dish, layer sauce, noodles, ricotta mixture, and mozzarella; repeat layers, ending with sauce and a topping of mozzarella and Parmesan",
+      "Bake for 45 minutes until bubbly and golden",
+      "Let rest for 10 minutes before serving"
+    ],
+    "prepTime": 30,
+    "cookTime": 65,
+    "servings": 8,
+    "nutritionInfo": {
+      "calories": 550,
+      "protein": 35,
+      "carbs": 45,
+      "fat": 25
+    },
+    "dietaryTags": [],
+    "difficulty": "Medium",
+    "imageFileName": "lasagna",
+    "source": "Italian Cuisine",
+    "imageName": "main_course"
+  },
+  {
+    "id": "a7b3c9d0-5e8f-4a2b-9c5d-3e6f7a8b9c0d",
+    "name": "Mediterranean Quinoa Bowl",
+    "category": "Lunch",
+    "ingredients": [
+      {
+        "name": "Quinoa",
+        "amount": 200.0,
+        "unit": "g",
+        "category": "Pantry",
+        "isPerishable": false,
+        "shelfLife": 365
+      },
+      {
+        "name": "Cherry Tomatoes",
+        "amount": 200.0,
+        "unit": "g",
+        "category": "Produce",
+        "isPerishable": true,
+        "shelfLife": 7
+      },
+      {
+        "name": "Cucumber",
+        "amount": 1.0,
+        "unit": "pcs",
+        "category": "Produce",
+        "isPerishable": true,
+        "shelfLife": 7
+      },
+      {
+        "name": "Red Onion",
+        "amount": 0.5,
+        "unit": "pcs",
+        "category": "Produce",
+        "isPerishable": true,
+        "shelfLife": 14
+      },
+      {
+        "name": "Feta Cheese",
+        "amount": 100.0,
+        "unit": "g",
+        "category": "Dairy",
+        "isPerishable": true,
+        "shelfLife": 14
+      },
+      {
+        "name": "Kalamata Olives",
+        "amount": 50.0,
+        "unit": "g",
+        "category": "Pantry",
+        "isPerishable": false,
+        "shelfLife": 180
+      },
+      {
+        "name": "Olive Oil",
+        "amount": 2.0,
+        "unit": "tbsp",
+        "category": "Pantry",
+        "isPerishable": false,
+        "shelfLife": 365
+      },
+      {
+        "name": "Lemon Juice",
+        "amount": 1.0,
+        "unit": "tbsp",
+        "category": "Produce",
+        "isPerishable": true,
+        "shelfLife": 7
+      },
+      {
+        "name": "Fresh Mint",
+        "amount": 10.0,
+        "unit": "g",
+        "category": "Produce",
+        "isPerishable": true,
+        "shelfLife": 5
+      }
+    ],
+    "instructions": [
+      "Rinse quinoa under cold water and drain well",
+      "Cook quinoa according to package instructions, usually 15-20 minutes until water is absorbed",
+      "Allow quinoa to cool to room temperature",
+      "Dice cucumber and quarter cherry tomatoes",
+      "Thinly slice red onion and chop mint leaves",
+      "In a large bowl, combine quinoa, vegetables, olives, and feta cheese",
+      "Whisk together olive oil and lemon juice for dressing",
+      "Pour dressing over the salad and toss gently",
+      "Garnish with additional mint leaves and serve"
+    ],
+    "prepTime": 15,
+    "cookTime": 20,
+    "servings": 4,
+    "nutritionInfo": {
+      "calories": 320,
+      "protein": 12,
+      "carbs": 40,
+      "fat": 15
+    },
+    "dietaryTags": [
+      "vegetarian",
+      "glutenFree"
+    ],
+    "difficulty": "Easy",
+    "imageFileName": "quinoa_bowl",
+    "source": "Mediterranean Diet Cookbook",
+    "imageName": "lunch"
+  },
+  {
+    "id": "b8c9d0e1-6f7g-5h8i-9j0k-1l2m3n4o5p6",
+    "name": "Quick Chicken Curry",
+    "category": "Dinner",
+    "ingredients": [
+      {
+        "name": "Chicken Breast",
+        "amount": 600.0,
+        "unit": "g",
+        "category": "Meat",
+        "isPerishable": true,
+        "shelfLife": 3
+      },
+      {
+        "name": "Curry Powder",
+        "amount": 2.0,
+        "unit": "tbsp",
+        "category": "Pantry",
+        "isPerishable": false,
+        "shelfLife": 180
+      },
+      {
+        "name": "Garlic",
+        "amount": 3.0,
+        "unit": "pcs",
+        "category": "Produce",
+        "isPerishable": true,
+        "shelfLife": 30
+      },
+      {
+        "name": "Ginger",
+        "amount": 1.0,
+        "unit": "tbsp",
+        "category": "Produce",
+        "isPerishable": true,
+        "shelfLife": 14
+      },
+      {
+        "name": "Onion",
+        "amount": 1.0,
+        "unit": "pcs",
+        "category": "Produce",
+        "isPerishable": true,
+        "shelfLife": 30
+      },
+      {
+        "name": "Coconut Milk",
+        "amount": 400.0,
+        "unit": "ml",
+        "category": "Pantry",
+        "isPerishable": false,
+        "shelfLife": 365
+      },
+      {
+        "name": "Canned Tomatoes",
+        "amount": 400.0,
+        "unit": "g",
+        "category": "Pantry",
+        "isPerishable": false,
+        "shelfLife": 730
+      },
+      {
+        "name": "Basmati Rice",
+        "amount": 300.0,
+        "unit": "g",
+        "category": "Pantry",
+        "isPerishable": false,
+        "shelfLife": 730
+      }
+    ],
+    "instructions": [
+      "Dice chicken breast into bite-sized pieces",
+      "Finely chop onion, garlic, and ginger",
+      "Heat oil in a large pan over medium-high heat",
+      "Add onion and cook until translucent, about 3-4 minutes",
+      "Add garlic and ginger, cook for another minute",
+      "Add chicken and cook until browned on all sides",
+      "Sprinkle curry powder over the chicken and stir to coat",
+      "Pour in coconut milk and canned tomatoes, stir well",
+      "Bring to a simmer and cook for 15 minutes",
+      "Meanwhile, cook basmati rice according to package instructions",
+      "Serve curry over rice with fresh cilantro if desired"
+    ],
+    "prepTime": 10,
+    "cookTime": 25,
+    "servings": 4,
+    "nutritionInfo": {
+      "calories": 450,
+      "protein": 35,
+      "carbs": 40,
+      "fat": 16
+    },
+    "dietaryTags": [
+      "dairyFree",
+      "glutenFree"
+    ],
+    "difficulty": "Easy",
+    "imageFileName": "chicken_curry",
+    "source": "Quick Weeknight Meals",
+    "imageName": "curry"
+  },
+  {
+    "id": "c9d0e1f2-7g8h-6i9j-0k1l-2m3n4o5p6q7r",
+    "name": "Sweet Potato Black Bean Tacos",
+    "category": "Dinner",
+    "ingredients": [
+      {
+        "name": "Sweet Potatoes",
+        "amount": 2.0,
+        "unit": "pcs",
+        "category": "Produce",
+        "isPerishable": true,
+        "shelfLife": 30
+      },
+      {
+        "name": "Black Beans",
+        "amount": 400.0,
+        "unit": "g",
+        "category": "Pantry",
+        "isPerishable": false,
+        "shelfLife": 730
+      },
+      {
+        "name": "Corn Tortillas",
+        "amount": 8.0,
+        "unit": "pcs",
+        "category": "Pantry",
+        "isPerishable": true,
+        "shelfLife": 14
+      },
+      {
+        "name": "Avocado",
+        "amount": 1.0,
+        "unit": "pcs",
+        "category": "Produce",
+        "isPerishable": true,
+        "shelfLife": 5
+      },
+      {
+        "name": "Lime",
+        "amount": 1.0,
+        "unit": "pcs",
+        "category": "Produce",
+        "isPerishable": true,
+        "shelfLife": 14
+      },
+      {
+        "name": "Cilantro",
+        "amount": 15.0,
+        "unit": "g",
+        "category": "Produce",
+        "isPerishable": true,
+        "shelfLife": 7
+      },
+      {
+        "name": "Cumin",
+        "amount": 1.0,
+        "unit": "tsp",
+        "category": "Pantry",
+        "isPerishable": false,
+        "shelfLife": 365
+      },
+      {
+        "name": "Chili Powder",
+        "amount": 1.0,
+        "unit": "tsp",
+        "category": "Pantry",
+        "isPerishable": false,
+        "shelfLife": 365
+      }
+    ],
+    "instructions": [
+      "Preheat oven to 425\u00b0F (220\u00b0C)",
+      "Peel and dice sweet potatoes into small cubes",
+      "Toss sweet potatoes with olive oil, cumin, chili powder, salt, and pepper",
+      "Spread on a baking sheet and roast for 25 minutes, stirring halfway",
+      "Meanwhile, drain and rinse black beans",
+      "Heat black beans in a small saucepan with a pinch of cumin and salt",
+      "Warm corn tortillas in a dry skillet or directly over a gas flame",
+      "Slice avocado and cut lime into wedges",
+      "Assemble tacos with sweet potatoes, black beans, and avocado",
+      "Garnish with chopped cilantro and a squeeze of lime"
+    ],
+    "prepTime": 15,
+    "cookTime": 25,
+    "servings": 4,
+    "nutritionInfo": {
+      "calories": 380,
+      "protein": 12,
+      "carbs": 60,
+      "fat": 14
+    },
+    "dietaryTags": [
+      "vegetarian",
+      "vegan",
+      "dairyFree"
+    ],
+    "difficulty": "Easy",
+    "imageFileName": "sweet_potato_tacos",
+    "source": "Plant-Based Cooking",
+    "imageName": "tacos"
+  },
+  {
+    "id": "d0e1f2g3-8h9i-7j0k-1l2m-3n4o5p6q7r8s",
+    "name": "Lemon Garlic Butter Shrimp Pasta",
+    "category": "Main Course",
+    "ingredients": [
+      {
+        "name": "Linguine Pasta",
+        "amount": 400.0,
+        "unit": "g",
+        "category": "Pantry",
+        "isPerishable": false,
+        "shelfLife": 730
+      },
+      {
+        "name": "Shrimp",
+        "amount": 500.0,
+        "unit": "g",
+        "category": "Seafood",
+        "isPerishable": true,
+        "shelfLife": 2
+      },
+      {
+        "name": "Butter",
+        "amount": 60.0,
+        "unit": "g",
+        "category": "Dairy",
+        "isPerishable": true,
+        "shelfLife": 30
+      },
+      {
+        "name": "Garlic",
+        "amount": 4.0,
+        "unit": "pcs",
+        "category": "Produce",
+        "isPerishable": true,
+        "shelfLife": 30
+      },
+      {
+        "name": "Lemon",
+        "amount": 1.0,
+        "unit": "pcs",
+        "category": "Produce",
+        "isPerishable": true,
+        "shelfLife": 14
+      },
+      {
+        "name": "White Wine",
+        "amount": 60.0,
+        "unit": "ml",
+        "category": "Pantry",
+        "isPerishable": false,
+        "shelfLife": 730
+      },
+      {
+        "name": "Red Pepper Flakes",
+        "amount": 0.5,
+        "unit": "tsp",
+        "category": "Pantry",
+        "isPerishable": false,
+        "shelfLife": 730
+      },
+      {
+        "name": "Parsley",
+        "amount": 15.0,
+        "unit": "g",
+        "category": "Produce",
+        "isPerishable": true,
+        "shelfLife": 7
+      },
+      {
+        "name": "Parmesan Cheese",
+        "amount": 50.0,
+        "unit": "g",
+        "category": "Dairy",
+        "isPerishable": true,
+        "shelfLife": 30
+      }
+    ],
+    "instructions": [
+      "Cook linguine in salted water according to package instructions",
+      "While pasta cooks, peel and devein shrimp if needed",
+      "Mince garlic and chop parsley",
+      "Zest and juice the lemon",
+      "Melt half the butter in a large skillet over medium-high heat",
+      "Add shrimp and cook for 1-2 minutes per side until pink",
+      "Remove shrimp to a plate and set aside",
+      "Add remaining butter to the skillet, then add garlic and red pepper flakes",
+      "Saut\u00e9 for 1 minute until fragrant",
+      "Add white wine and lemon juice, simmer for 2 minutes",
+      "Drain pasta, reserving 1/4 cup of pasta water",
+      "Add pasta, shrimp, and pasta water to the skillet",
+      "Toss everything together, then add lemon zest and parsley",
+      "Serve with grated parmesan cheese"
+    ],
+    "prepTime": 15,
+    "cookTime": 20,
+    "servings": 4,
+    "nutritionInfo": {
+      "calories": 520,
+      "protein": 35,
+      "carbs": 55,
+      "fat": 18
+    },
+    "dietaryTags": [],
+    "difficulty": "Medium",
+    "imageFileName": "shrimp_pasta",
+    "source": "Italian Favorites",
+    "imageName": "pasta"
+  },
+  {
+    "id": "e1f2g3h4-9i0j-8k1l-2m3n-4o5p6q7r8s9t",
+    "name": "Chocolate Mousse",
+    "category": "Dessert",
+    "ingredients": [
+      {
+        "name": "Dark Chocolate",
+        "amount": 200.0,
+        "unit": "g",
+        "category": "Pantry",
+        "isPerishable": false,
+        "shelfLife": 365
+      },
+      {
+        "name": "Heavy Cream",
+        "amount": 300.0,
+        "unit": "ml",
+        "category": "Dairy",
+        "isPerishable": true,
+        "shelfLife": 7
+      },
+      {
+        "name": "Eggs",
+        "amount": 4.0,
+        "unit": "pcs",
+        "category": "Dairy",
+        "isPerishable": true,
+        "shelfLife": 21
+      },
+      {
+        "name": "Sugar",
+        "amount": 50.0,
+        "unit": "g",
+        "category": "Pantry",
+        "isPerishable": false,
+        "shelfLife": 730
+      },
+      {
+        "name": "Vanilla Extract",
+        "amount": 1.0,
+        "unit": "tsp",
+        "category": "Pantry",
+        "isPerishable": false,
+        "shelfLife": 730
+      },
+      {
+        "name": "Salt",
+        "amount": 0.25,
+        "unit": "tsp",
+        "category": "Pantry",
+        "isPerishable": false,
+        "shelfLife": 3650
+      }
+    ],
+    "instructions": [
+      "Chop chocolate into small pieces and place in a heatproof bowl",
+      "Separate eggs, placing whites in a large clean bowl and yolks in a small bowl",
+      "Heat 1/3 of the cream until it just begins to simmer",
+      "Pour hot cream over chocolate and let sit for 1 minute, then stir until smooth",
+      "Add egg yolks one at a time, stirring well after each addition",
+      "In a separate bowl, whip the remaining cream to soft peaks",
+      "In another bowl, whip egg whites with salt until foamy",
+      "Gradually add sugar to egg whites and continue whipping until glossy peaks form",
+      "Fold whipped cream into chocolate mixture",
+      "Gently fold in egg whites until no streaks remain",
+      "Divide mousse into serving dishes and refrigerate for at least 4 hours",
+      "Serve chilled, garnished with additional whipped cream if desired"
+    ],
+    "prepTime": 30,
+    "cookTime": 5,
+    "servings": 6,
+    "nutritionInfo": {
+      "calories": 400,
+      "protein": 6,
+      "carbs": 24,
+      "fat": 32
+    },
+    "dietaryTags": [
+      "vegetarian",
+      "glutenFree"
+    ],
+    "difficulty": "Medium",
+    "imageFileName": "chocolate_mousse",
+    "source": "French Desserts",
+    "imageName": "dessert"
+  }
+]

@@ -6,7 +6,14 @@ struct MainTabView: View {
     
     // Create shared ViewModels
     @StateObject private var shoppingListViewModel = ShoppingListViewModel()
-    @StateObject private var recipeListViewModel = RecipeListViewModel()
+    
+    // Instead of creating RecipeListViewModel, accept it as a parameter
+    @ObservedObject var recipeListViewModel: RecipeListViewModel
+    
+    // Initializer to accept RecipeListViewModel
+    init(recipeListViewModel: RecipeListViewModel) {
+        self.recipeListViewModel = recipeListViewModel
+    }
     
     var body: some View {
         let recipesViewModel = RecipesViewModel(recipeListViewModel: recipeListViewModel)
@@ -54,8 +61,8 @@ struct MainTabView: View {
         .accentColor(AppTheme.accentTeal)
         .onAppear {
             let appearance = UITabBarAppearance()
-            appearance.backgroundColor = UIColor(AppTheme.tabBarBackground)
-            appearance.shadowColor = UIColor(AppTheme.tabBarBorder)
+            appearance.backgroundColor = UIColor(AppTheme.background)
+            appearance.shadowColor = UIColor(AppTheme.borderColor)
             
             UITabBar.appearance().standardAppearance = appearance
             UITabBar.appearance().scrollEdgeAppearance = appearance
@@ -246,7 +253,7 @@ struct SeasonalTipsCard: View {
 
 struct MainTabView_Previews: PreviewProvider {
     static var previews: some View {
-        MainTabView()
+        MainTabView(recipeListViewModel: RecipeListViewModel())
             .preferredColorScheme(.dark)
     }
 } 

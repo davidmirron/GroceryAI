@@ -6,6 +6,7 @@ class RecipesViewModel: ObservableObject {
     @Published var recipes: [Recipe] = []
     @Published var isLoading = false
     @Published var errorMessage: String?
+    @Published var selectedFilter: RecipeFilter = .all
     
     // Use an injected RecipeListViewModel instead of creating our own
     private var recipeListViewModel: RecipeListViewModel
@@ -19,6 +20,146 @@ class RecipesViewModel: ObservableObject {
         self.recipeListViewModel = recipeListViewModel
         self.shoppingListViewModel = shoppingListViewModel
         loadInitialRecipes()
+    }
+    
+    // MARK: - Recipe Categorization
+    
+    /// Returns recipes with 90%+ match that can be cooked tonight
+    func cookTonightRecipes() -> [Recipe] {
+        return recipes.filter { $0.matchScore >= 0.9 }
+    }
+    
+    /// Returns recipes with 60-89% match that are almost ready to cook
+    func almostThereRecipes() -> [Recipe] {
+        return recipes.filter { $0.matchScore >= 0.6 && $0.matchScore < 0.9 }
+    }
+    
+    /// Returns recipes with 30-59% match that are worth exploring
+    func worthExploringRecipes() -> [Recipe] {
+        return recipes.filter { $0.matchScore >= 0.3 && $0.matchScore < 0.6 }
+    }
+    
+    /// Returns all custom recipes created by the user
+    func customRecipes() -> [Recipe] {
+        // First try to use the isCustomRecipe flag
+        let markedCustomRecipes = recipes.filter { $0.isCustomRecipe }
+        
+        // If we have custom recipes from the flag, use those
+        if !markedCustomRecipes.isEmpty {
+            return markedCustomRecipes
+        }
+        
+        // Otherwise fall back to checking against RecipeListViewModel
+        let customFromList = recipeListViewModel.recipes.filter { $0.isCustomRecipe }
+        if !customFromList.isEmpty {
+            return customFromList
+        }
+        
+        // Final fallback: identify custom recipes as those not in defaults
+        let defaultRecipeNames = getDefaultRecipes().map { $0.name }
+        return recipeListViewModel.recipes.filter { !defaultRecipeNames.contains($0.name) }
+    }
+    
+    /// Returns filtered recipes based on the selected filter
+    func filteredRecipes() -> [Recipe] {
+        // Use the extension method for consistent filtering logic
+        return recipes.filtered(by: selectedFilter)
+    }
+    
+    /// Apply a filter to the recipes list
+    func applyFilter(_ filter: RecipeFilter) {
+        self.selectedFilter = filter
+        objectWillChange.send()
+    }
+    
+    // MARK: - Shopping List Integration
+    
+    /// Add a single missing ingredient to the shopping list
+    func addMissingIngredient(_ ingredient: Ingredient) {
+        shoppingListViewModel.addItem(ingredient)
+        
+        // Update the recipe matching data
+        refreshRecipes()
+        
+        // Haptic feedback
+        let generator = UIImpactFeedbackGenerator(style: .light)
+        generator.impactOccurred()
+    }
+    
+    /// Add all missing ingredients from a recipe to the shopping list
+    func addAllMissingIngredients(from recipe: Recipe) {
+        for ingredient in recipe.missingIngredients {
+            shoppingListViewModel.addItem(ingredient)
+        }
+        
+        // Update the recipe matching data
+        refreshRecipes()
+        
+        // Haptic feedback
+        let generator = UIImpactFeedbackGenerator(style: .medium)
+        generator.impactOccurred()
+    }
+    
+    /// Refresh recipes with latest shopping list data and match scores
+    func refreshRecipes() {
+        // Start loading
+        isLoading = true
+        
+        // Check if we should load JSON recipes
+        let hasLoadedJSON = UserDefaults.standard.bool(forKey: "hasLoadedRecipeJSON")
+        let recipeCount = CoreDataManager.shared.getRecipeCount()
+        
+        if !hasLoadedJSON || recipeCount == 0 {
+            print("🍽️ First run or no recipes in CoreData: Loading recipes from JSON...")
+            refreshWithJSONRecipes(recipeListViewModel: recipeListViewModel)
+            
+            // After JSON is loaded, we'll continue with normal refresh
+            // This will happen when the refreshWithJSONRecipes completion block is called
+            return
+        }
+        
+        // Get current shopping list items
+        let currentItems = shoppingListViewModel.items
+        
+        // Create a local copy of recipes to work with
+        let allRecipes = recipeListViewModel.recipes
+        
+        // Show loading state for better UX
+        if recipes.isEmpty {
+            isLoading = true
+        }
+        
+        // Add a slight delay for better visual feedback if we're showing loading indicator
+        let delay: TimeInterval = isLoading ? 0.5 : 0.1
+        
+        // Process recipes in background to avoid UI freezes
+        DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [weak self] in
+            guard let self = self else { return }
+            
+            // Calculate match scores for recipes
+            var updatedRecipes: [Recipe] = []
+            
+            for recipe in allRecipes {
+                recipe.matchScore = self.calculateMatchScore(for: recipe, with: currentItems)
+                
+                // Update missing ingredients
+                recipe.missingIngredients = self.getMissingIngredients(for: recipe, with: currentItems)
+                
+                updatedRecipes.append(recipe)
+            }
+            
+            // Sort by match score (descending)
+            updatedRecipes.sort { $0.matchScore > $1.matchScore }
+            
+            // Update the recipes
+            self.recipes = updatedRecipes
+            
+            // Finish loading
+            self.isLoading = false
+            
+            // Notify UI that we've changed
+            self.objectWillChange.send()
+        }
     }
     
     func loadInitialRecipes() {
@@ -141,7 +282,8 @@ class RecipesViewModel: ObservableObject {
                         missingIngredients: missingIngredients,
                         dietaryTags: recipe.dietaryTags,
                         imageName: recipe.imageName,
-                        matchScore: adjustedMatchScore
+                        matchScore: adjustedMatchScore,
+                        isCustomRecipe: recipe.isCustomRecipe
                     )
                     
                     // Add to available recipes
@@ -505,79 +647,6 @@ class RecipesViewModel: ObservableObject {
         ]
     }
     
-    // Add a function to verify recipes are loaded
-    func verifyRecipesLoaded() -> Bool {
-        // This will check if recipes are properly loaded
-        let count = recipes.count
-        print("Current recipe count: \(count)")
-        return count > 0
-    }
-    
-    // Helper function to round match scores to avoid floating point precision issues
-    private func roundMatchScore(_ score: Double) -> Double {
-        // Round to 2 decimal places to avoid precision issues
-        return (score * 100).rounded() / 100
-    }
-    
-    // Use this in your calculateMatchScore function
-    private func calculateMatchScore(for recipe: Recipe) -> Double {
-        // If there are no ingredients in the shopping list, return 0
-        if shoppingListViewModel.items.isEmpty {
-            return 0.0
-        }
-        
-        // Count matching ingredients
-        var matchedIngredientCount = 0
-        
-        // For each ingredient in the recipe
-        for ingredient in recipe.ingredients {
-            // Check if we have this ingredient in our shopping list
-            let hasIngredient = shoppingListViewModel.items.contains { shoppingListIngredient in
-                // IMPROVED MATCHING - More precise matching by using word boundaries
-                let shoppingName = shoppingListIngredient.name.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
-                let recipeName = ingredient.name.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
-                
-                // Check for exact matches first
-                if shoppingName == recipeName {
-                    return true
-                }
-                
-                // Then check for more specific substring matches
-                // Split names into words for better matching
-                let shoppingWords = shoppingName.split(separator: " ")
-                let recipeWords = recipeName.split(separator: " ")
-                
-                // Check if any shopping list word exactly matches any recipe word
-                for shoppingWord in shoppingWords {
-                    for recipeWord in recipeWords {
-                        if shoppingWord == recipeWord && shoppingWord.count > 3 {
-                            // Only match on significant words (length > 3)
-                            return true
-                        }
-                    }
-                }
-                
-                // Fallback to simple matching for short ingredient names
-                return (shoppingName.contains(recipeName) && recipeName.count > 3) ||
-                       (recipeName.contains(shoppingName) && shoppingName.count > 3)
-            }
-            
-            if hasIngredient {
-                matchedIngredientCount += 1
-            }
-        }
-        
-        // Calculate score based on percentage of matched ingredients
-        let totalIngredients = recipe.ingredients.count
-        let rawScore = totalIngredients > 0 ? Double(matchedIngredientCount) / Double(totalIngredients) : 0.0
-        
-        // Apply a slight boost to make the UI look better (matching the algorithm in generateRecipes)
-        let adjustedScore = min(1.0, rawScore * 1.2)
-        
-        // Round to avoid floating point precision issues
-        return roundMatchScore(adjustedScore)
-    }
-    
     // MARK: - Custom Recipe Management
     func addCustomRecipeAndRefresh(_ recipe: Recipe) {
         // Create a clean copy with isCustomRecipe set to true
@@ -613,19 +682,86 @@ class RecipesViewModel: ObservableObject {
         print("Added custom recipe: \(customRecipe.name), isCustom: \(customRecipe.isCustomRecipe)")
     }
     
-    // MARK: - Custom Recipe Filter
-    func customRecipes() -> [Recipe] {
-        // First try to use the isCustomRecipe flag
-        let markedCustomRecipes = recipeListViewModel.recipes.filter { $0.isCustomRecipe }
+    // MARK: - Recipe Discovery Features
+    
+    /// Find similar recipes to a given recipe
+    func findSimilarRecipes(to recipe: Recipe, limit: Int = 3) -> [Recipe] {
+        // Skip the original recipe
+        let candidates = recipes.filter { $0.id != recipe.id }
         
-        // If we have custom recipes from the flag, use those
-        if !markedCustomRecipes.isEmpty {
-            return markedCustomRecipes
+        // Calculate similarity scores
+        let scoredRecipes = candidates.map { candidate -> (Recipe, Double) in
+            let score = calculateSimilarityScore(between: recipe, and: candidate)
+            return (candidate, score)
         }
         
-        // Otherwise fall back to the old method - identify custom recipes as those not in defaults
-        let defaultRecipeNames = getDefaultRecipes().map { $0.name }
-        return recipeListViewModel.recipes.filter { !defaultRecipeNames.contains($0.name) }
+        // Sort by score (descending) and take the top results
+        return scoredRecipes
+            .sorted { $0.1 > $1.1 }
+            .prefix(limit)
+            .map { $0.0 }
+    }
+    
+    /// Calculate how similar two recipes are (0-1 scale)
+    private func calculateSimilarityScore(between recipe1: Recipe, and recipe2: Recipe) -> Double {
+        var score = 0.0
+        
+        // Same category is a strong signal
+        if recipe1.category == recipe2.category {
+            score += 0.4
+        }
+        
+        // Similar difficulty
+        if recipe1.difficulty == recipe2.difficulty {
+            score += 0.1
+        }
+        
+        // Ingredient overlap
+        let ingredients1 = Set(recipe1.ingredients.map { $0.name.lowercased() })
+        let ingredients2 = Set(recipe2.ingredients.map { $0.name.lowercased() })
+        
+        if !ingredients1.isEmpty && !ingredients2.isEmpty {
+            let intersection = ingredients1.intersection(ingredients2)
+            let union = ingredients1.union(ingredients2)
+            
+            // Jaccard similarity for ingredients
+            let similarity = Double(intersection.count) / Double(union.count)
+            score += similarity * 0.3
+        }
+        
+        // Dietary tag overlap
+        let tags1 = recipe1.dietaryTags
+        let tags2 = recipe2.dietaryTags
+        
+        if !tags1.isEmpty && !tags2.isEmpty {
+            let commonTags = tags1.intersection(tags2)
+            let union = tags1.union(tags2)
+            
+            if !union.isEmpty {
+                // Jaccard similarity for tags
+                let similarity = Double(commonTags.count) / Double(union.count)
+                score += similarity * 0.2
+            }
+        }
+        
+        return min(score, 1.0)  // Cap at 1.0
+    }
+    
+    // MARK: - Match Score Grouping
+    
+    /// Returns recipes with high match scores (Cook Tonight category)
+    func getCookTonight() -> [Recipe] {
+        return recipes.filter { $0.matchScore >= 0.7 }
+    }
+    
+    /// Returns recipes with medium match scores (Almost There category)
+    func getAlmostThere() -> [Recipe] {
+        return recipes.filter { $0.matchScore >= 0.4 && $0.matchScore < 0.7 }
+    }
+    
+    /// Returns recipes with low match scores (Worth Exploring category)
+    func getWorthExploring() -> [Recipe] {
+        return recipes.filter { $0.matchScore < 0.4 }
     }
 }
 
@@ -789,6 +925,60 @@ extension RecipesViewModel {
             // Only update the published property once, outside of view updates
             self.objectWillChange.send()
             self.recipes = updatedRecipes
+        }
+    }
+    
+    // Helper function to calculate match score for a recipe with current shopping list
+    private func calculateMatchScore(for recipe: Recipe) -> Double {
+        return calculateMatchScore(for: recipe, with: shoppingListViewModel.items)
+    }
+    
+    func refreshWithJSONRecipes(recipeListViewModel: RecipeListViewModel) {
+        // Set loading state
+        isLoading = true
+        
+        // Check if we have already loaded the JSON recipes and have recipes in CoreData
+        let recipeCount = CoreDataManager.shared.getRecipeCount()
+        if UserDefaults.standard.bool(forKey: "hasLoadedRecipeJSON") && recipeCount > 0 {
+            print("JSON recipes already loaded in CoreData, skipping")
+            isLoading = false
+            
+            // Continue with regular refresh process, which calculates match scores
+            refreshRecipes()
+            return
+        }
+        
+        // Add some debug info
+        print("🔄 Starting JSON recipe loading process...")
+        
+        // Perform in background to avoid UI freeze
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            guard let self = self else { return }
+            
+            // First, ensure RecipeListViewModel has loaded initial data
+            recipeListViewModel.ensureInitialDataLoaded()
+            
+            // Load recipes from JSON through the provided recipeListViewModel
+            recipeListViewModel.loadRecipesFromJSON()
+            
+            // Mark as loaded so we don't reload every time
+            UserDefaults.standard.set(true, forKey: "hasLoadedRecipeJSON")
+            
+            // Also store the app version so we can refresh on updates
+            if let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String {
+                UserDefaults.standard.set(appVersion, forKey: "lastRecipeJSONVersion")
+            }
+            
+            // Return to main thread for UI updates
+            DispatchQueue.main.async {
+                // Get the loaded recipes for statistics
+                let totalRecipeCount = recipeListViewModel.recipes.count
+                let coreDataCount = CoreDataManager.shared.getRecipeCount()
+                print("✅ JSON recipe loading complete. Total recipes: \(totalRecipeCount), CoreData count: \(coreDataCount)")
+                
+                // Continue with refreshRecipes to calculate match scores with the loaded data
+                self.refreshRecipes()
+            }
         }
     }
 } 

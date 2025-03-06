@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="21754" systemVersion="22G91" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="CDIngredient" representedClassName="CDIngredient" syncable="YES" codeGenerationType="class">
+        <attribute name="amount" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="category" attributeType="String"/>
+        <attribute name="customOrder" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="isPerishable" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="name" attributeType="String"/>
+        <attribute name="notes" optional="YES" attributeType="String"/>
+        <attribute name="typicalShelfLife" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="unit" attributeType="String"/>
+        <relationship name="recipe" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDRecipe" inverseName="ingredients" inverseEntity="CDRecipe"/>
+        <relationship name="recipeMissing" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDRecipe" inverseName="missingIngredients" inverseEntity="CDRecipe"/>
+    </entity>
+    <entity name="CDNutritionInfo" representedClassName="CDNutritionInfo" syncable="YES" codeGenerationType="class">
+        <attribute name="calories" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="carbs" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="fat" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="protein" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <relationship name="recipe" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDRecipe" inverseName="nutritionalInfo" inverseEntity="CDRecipe"/>
+    </entity>
+    <entity name="CDRecipe" representedClassName="CDRecipe" syncable="YES" codeGenerationType="class">
+        <attribute name="category" attributeType="String"/>
+        <attribute name="cookTime" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="difficulty" attributeType="String"/>
+        <attribute name="dietaryTags" optional="YES" attributeType="Transformable" valueTransformerName="NSSecureUnarchiveFromData" customClassName="[String]"/>
+        <attribute name="estimatedTime" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="imageName" optional="YES" attributeType="String"/>
+        <attribute name="instructions" attributeType="Transformable" valueTransformerName="NSSecureUnarchiveFromData" customClassName="[String]"/>
+        <attribute name="isCustomRecipe" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="matchScore" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="name" attributeType="String"/>
+        <attribute name="prepTime" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="servings" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="source" optional="YES" attributeType="String"/>
+        <relationship name="ingredients" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="CDIngredient" inverseName="recipe" inverseEntity="CDIngredient"/>
+        <relationship name="missingIngredients" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="CDIngredient" inverseName="recipeMissing" inverseEntity="CDIngredient"/>
+        <relationship name="nutritionalInfo" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="CDNutritionInfo" inverseName="recipe" inverseEntity="CDNutritionInfo"/>
+    </entity>
+</model> 
