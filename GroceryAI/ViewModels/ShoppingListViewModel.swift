@@ -405,4 +405,31 @@ class ShoppingListViewModel: ObservableObject {
         case recent
         case database
     }
+    
+    // MARK: - Enhanced methods for MealPlanView integration
+    // Add a shopping item directly
+    func addItem(id: String = UUID().uuidString, 
+                 name: String, 
+                 quantity: Double,
+                 unit: IngredientUnit, 
+                 category: IngredientCategory = .other) {
+        
+        let ingredient = Ingredient(
+            id: UUID(uuidString: id) ?? UUID(),
+            name: name,
+            amount: quantity,
+            unit: unit,
+            category: category
+        )
+        
+        addItem(ingredient)
+    }
+    
+    // Clear the entire shopping list
+    func clearList() {
+        items.removeAll()
+        selectedItems.removeAll()
+        saveItems()
+        saveSelectedItems()
+    }
 }

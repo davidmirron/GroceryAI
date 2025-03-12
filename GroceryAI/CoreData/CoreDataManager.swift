@@ -60,17 +60,114 @@ class CoreDataManager {
     // Delete all recipes
     func deleteAllRecipes(completion: (() -> Void)? = nil) {
         performBackgroundTask { context in
+            // Try a more robust approach that handles potential database issues
             let fetchRequest: NSFetchRequest<NSFetchRequestResult> = CDRecipe.fetchRequest()
-            let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
             
+            // First, try the standard approach
             do {
-                try context.execute(deleteRequest)
+                // Count recipes before deletion for logging
+                let count = try context.count(for: fetchRequest as! NSFetchRequest<NSManagedObject>)
+                
+                if count > 0 {
+                    // Use a batch delete request for efficiency with larger datasets
+                    let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
+                    deleteRequest.resultType = .resultTypeObjectIDs
+                    
+                    let result = try context.execute(deleteRequest) as? NSBatchDeleteResult
+                    
+                    if let objectIDs = result?.result as? [NSManagedObjectID] {
+                        // Use the returned object IDs to update the context's registered objects
+                        let changes = [NSDeletedObjectsKey: objectIDs]
+                        NSManagedObjectContext.mergeChanges(fromRemoteContextSave: changes, into: [context, self.persistentContainer.viewContext])
+                        
+                        print("✅ Successfully deleted \(objectIDs.count) recipes from CoreData")
+                    }
+                    
+                    // Save after batch deletion to ensure clean state
+                    try context.save()
+                } else {
+                    print("ℹ️ No recipes to delete")
+                }
+                
                 DispatchQueue.main.async {
                     completion?()
                 }
             } catch {
-                print("❌ Failed to delete all recipes: \(error)")
+                print("⚠️ Error during batch deletion: \(error)")
+                
+                // Fallback to individual fetch and delete if batch delete fails
+                self.handleDeletionFailure(context: context, completion: completion)
             }
+        }
+    }
+    
+    // Handle failures during deletion with a more careful approach
+    private func handleDeletionFailure(context: NSManagedObjectContext, completion: (() -> Void)? = nil) {
+        do {
+            // Try individual fetch and delete as a fallback
+            let fetchRequest: NSFetchRequest<CDRecipe> = CDRecipe.fetchRequest()
+            let recipes = try context.fetch(fetchRequest)
+            
+            print("🔄 Falling back to individual deletion for \(recipes.count) recipes")
+            
+            // Delete each recipe individually
+            for recipe in recipes {
+                context.delete(recipe)
+            }
+            
+            // Save after individual deletions
+            if context.hasChanges {
+                try context.save()
+                print("✅ Successfully deleted recipes using fallback method")
+            }
+            
+            DispatchQueue.main.async {
+                completion?()
+            }
+        } catch {
+            print("❌ Critical error during recipe deletion: \(error)")
+            
+            // Last resort: try to reset the entire store
+            self.resetPersistentStore {
+                DispatchQueue.main.async {
+                    completion?()
+                }
+            }
+        }
+    }
+    
+    // Reset the entire persistent store as a last resort
+    private func resetPersistentStore(completion: @escaping () -> Void) {
+        print("⚠️ Attempting to reset the persistent store")
+        
+        let coordinator = persistentContainer.persistentStoreCoordinator
+        
+        guard let storeURL = persistentContainer.persistentStoreDescriptions.first?.url,
+              let store = coordinator.persistentStore(for: storeURL) else {
+            print("❌ Could not locate persistent store for reset")
+            completion()
+            return
+        }
+        
+        do {
+            try coordinator.remove(store)
+            
+            // Recreate the store
+            try coordinator.addPersistentStore(
+                ofType: NSSQLiteStoreType,
+                configurationName: nil,
+                at: storeURL,
+                options: [
+                    NSMigratePersistentStoresAutomaticallyOption: true,
+                    NSInferMappingModelAutomaticallyOption: true
+                ]
+            )
+            
+            print("✅ Successfully reset the persistent store")
+            completion()
+        } catch {
+            print("❌ Failed to reset persistent store: \(error)")
+            completion()
         }
     }
     

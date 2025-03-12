@@ -1,5 +1,6 @@
 import SwiftUI
 import Combine
+import UIKit
 
 struct RecipesView: View {
     // ViewModels passed from parent
@@ -20,6 +21,7 @@ struct RecipesView: View {
     @State private var showScrollIndicator = true
     @State private var scrollToCustomRecipes = false
     @State private var showMyRecipesHighlight = false
+    @State private var showingAllCustomRecipes = false
     @Environment(\.colorScheme) private var colorScheme
     
     // Add parameter to accept ingredients from ShoppingListView
@@ -250,6 +252,111 @@ struct RecipesView: View {
                     },
                     recipesViewModel: recipesViewModel
                 )
+            }
+        }
+        .sheet(isPresented: $showingAllCustomRecipes) {
+            NavigationView {
+                VStack {
+                    if recipesViewModel.customRecipes().isEmpty {
+                        VStack(spacing: 20) {
+                            Image(systemName: "bookmark.slash")
+                                .font(.system(size: 50))
+                                .foregroundColor(.gray)
+                            
+                            Text("No Saved Recipes")
+                                .font(.headline)
+                            
+                            Text("Recipes you save will appear here")
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
+                                .multilineTextAlignment(.center)
+                                .padding(.horizontal)
+                            
+                            Button(action: {
+                                showingAllCustomRecipes = false
+                                isShowingNewRecipeSheet = true
+                            }) {
+                                Label("Create Recipe", systemImage: "plus")
+                                    .padding(.horizontal, 20)
+                                    .padding(.vertical, 10)
+                                    .background(AppTheme.primary)
+                                    .foregroundColor(.white)
+                                    .cornerRadius(8)
+                            }
+                        }
+                        .padding()
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .background(AppTheme.background.edgesIgnoringSafeArea(.all))
+                    } else {
+                        List {
+                            ForEach(recipesViewModel.customRecipes()) { recipe in
+                                NavigationLink(destination: RecipeDetailView(
+                                    recipe: recipe,
+                                    viewModel: shoppingListViewModel,
+                                    recipesViewModel: recipesViewModel
+                                )) {
+                                    HStack {
+                                        CachedImage(
+                                            imageName: recipe.imageName,
+                                            category: recipe.category,
+                                            contentMode: .fill,
+                                            cornerRadius: 8,
+                                            size: CGSize(width: 60, height: 60)
+                                        )
+                                        .frame(width: 60, height: 60)
+                                        .clipped()
+                                        .cornerRadius(8)
+                                        
+                                        VStack(alignment: .leading, spacing: 4) {
+                                            Text(recipe.name)
+                                                .font(.system(size: 16, weight: .semibold))
+                                                .foregroundColor(AppTheme.text)
+                                            
+                                            HStack(spacing: 8) {
+                                                Label(formatTime(recipe.estimatedTime), systemImage: "clock")
+                                                    .font(.system(size: 12))
+                                                    .foregroundColor(AppTheme.textSecondary)
+                                                
+                                                Text("•")
+                                                    .foregroundColor(AppTheme.textSecondary)
+                                                
+                                                Label("\(recipe.servings) servings", systemImage: "person.2")
+                                                    .font(.system(size: 12))
+                                                    .foregroundColor(AppTheme.textSecondary)
+                                            }
+                                        }
+                                        .padding(.leading, 8)
+                                        
+                                        Spacer()
+                                    }
+                                    .padding(.vertical, 4)
+                                }
+                            }
+                            .onDelete { indexSet in
+                                deleteRecipes(at: indexSet)
+                            }
+                        }
+                        .listStyle(.inset)
+                    }
+                }
+                .navigationTitle("My Recipes")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .navigationBarLeading) {
+                        Button("Done") {
+                            showingAllCustomRecipes = false
+                        }
+                    }
+                    
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        Button(action: {
+                            showingAllCustomRecipes = false
+                            isShowingNewRecipeSheet = true
+                        }) {
+                            Image(systemName: "plus")
+                        }
+                    }
+                }
             }
         }
         .onAppear {
@@ -658,17 +765,7 @@ struct RecipesView: View {
                 Spacer()
                 
                 Button(action: {
-                    // Show all user's recipes - for now we'll just highlight the section
-                    withAnimation {
-                        showMyRecipesHighlight = true
-                    }
-                    
-                    // Then fade it out after a delay
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                        withAnimation {
-                            showMyRecipesHighlight = false
-                        }
-                    }
+                    showingAllCustomRecipes = true
                 }) {
                     Text("See All")
                         .font(.system(size: 14, weight: .medium))
@@ -1520,6 +1617,27 @@ struct RecipesView: View {
             print("  - Average filtering time: \(String(format: "%.2f", avgTime)) ms")
             print("  - Total operations: \(filteringOperations)")
         }
+    }
+    
+    // Helper function to delete recipes from the My Recipes view
+    private func deleteRecipes(at indexSet: IndexSet) {
+        // Get the recipes being deleted
+        let recipesToDelete = indexSet.map { recipesViewModel.customRecipes()[$0] }
+        
+        // Create an index set for the RecipeListViewModel's recipes array
+        let recipeListIndexSet = IndexSet(recipesToDelete.compactMap { recipe in
+            recipeListViewModel.recipes.firstIndex(where: { $0.id == recipe.id })
+        })
+        
+        // Delete from RecipeListViewModel
+        recipeListViewModel.removeRecipe(at: recipeListIndexSet)
+        
+        // Refresh recipes to update the UI
+        recipesViewModel.refreshRecipes()
+        
+        // Haptic feedback
+        let generator = UIImpactFeedbackGenerator(style: .medium)
+        generator.impactOccurred()
     }
 }
 

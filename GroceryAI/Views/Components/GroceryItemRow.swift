@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 struct GroceryItemRow: View {
     @EnvironmentObject var viewModel: ShoppingListViewModel

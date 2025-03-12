@@ -6,6 +6,7 @@ struct MainTabView: View {
     
     // Create shared ViewModels
     @StateObject private var shoppingListViewModel = ShoppingListViewModel()
+    @StateObject private var mealPlanViewModel: MealPlanViewModel
     
     // Instead of creating RecipeListViewModel, accept it as a parameter
     @ObservedObject var recipeListViewModel: RecipeListViewModel
@@ -13,12 +14,19 @@ struct MainTabView: View {
     // Initializer to accept RecipeListViewModel
     init(recipeListViewModel: RecipeListViewModel) {
         self.recipeListViewModel = recipeListViewModel
+        
+        // Create shopping list view model first
+        let shoppingListVM = ShoppingListViewModel()
+        _shoppingListViewModel = StateObject(wrappedValue: shoppingListVM)
+        
+        // Initialize meal plan view model with the dependencies
+        _mealPlanViewModel = StateObject(wrappedValue: MealPlanViewModel())
     }
     
     var body: some View {
         let recipesViewModel = RecipesViewModel(recipeListViewModel: recipeListViewModel)
         
-        TabView(selection: $selectedTab) {
+        return TabView(selection: $selectedTab) {
             NavigationStack {
                 ShoppingListView(
                     viewModel: shoppingListViewModel,
@@ -44,6 +52,7 @@ struct MainTabView: View {
             
             NavigationStack {
                 MealPlanView()
+                    .environmentObject(mealPlanViewModel)
             }
             .tabItem {
                 Label("Meal Plan", systemImage: "calendar")
@@ -51,7 +60,7 @@ struct MainTabView: View {
             .tag(2)
             
             NavigationStack {
-                TipsView()
+                TipsView(selectedTab: $selectedTab)
             }
             .tabItem {
                 Label("Tips", systemImage: "lightbulb")
@@ -67,11 +76,16 @@ struct MainTabView: View {
             UITabBar.appearance().standardAppearance = appearance
             UITabBar.appearance().scrollEdgeAppearance = appearance
         }
+        .environmentObject(shoppingListViewModel)
+        .environmentObject(mealPlanViewModel)
     }
 }
 
 // Enhanced TipsView to make it more engaging and useful
 struct TipsView: View {
+    @EnvironmentObject var mealPlanViewModel: MealPlanViewModel
+    @Binding var selectedTab: Int
+    
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
@@ -123,7 +137,10 @@ struct TipsView: View {
                     // Add app integration tip linking to meal plan
                     Divider().padding(.horizontal)
                     
-                    NavigationLink(destination: MealPlanView()) {
+                    Button {
+                        // Switch to the meal plan tab
+                        selectedTab = 2
+                    } label: {
                         EnhancedTipRow(
                             icon: "cart.fill.badge.plus",
                             title: "Use Your Meal Plan",
@@ -164,7 +181,15 @@ struct EnhancedTipRow: View {
     let title: String
     let description: String
     let accentColor: Color
-    var isNavigationLink: Bool = false
+    let isNavigationLink: Bool
+    
+    init(icon: String, title: String, description: String, accentColor: Color, isNavigationLink: Bool = false) {
+        self.icon = icon
+        self.title = title
+        self.description = description
+        self.accentColor = accentColor
+        self.isNavigationLink = isNavigationLink
+    }
     
     var body: some View {
         HStack(alignment: .top, spacing: 16) {

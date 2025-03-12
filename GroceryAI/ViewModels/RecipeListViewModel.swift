@@ -27,28 +27,70 @@ class RecipeListViewModel: ObservableObject {
     }
     
     func removeRecipe(at indexSet: IndexSet) {
+        // Safely handle empty arrays
+        guard !recipes.isEmpty else {
+            print("Attempted to delete from an empty recipe array, ignoring")
+            return
+        }
+        
+        // Safety check to prevent index out of range
+        let safeIndexSet = IndexSet(indexSet.filter { $0 < recipes.count })
+        if safeIndexSet.count != indexSet.count {
+            print("⚠️ Some indices were out of range and will be ignored")
+        }
+        
         // Get the recipes to remove
-        let recipesToRemove = indexSet.map { recipes[$0] }
+        let recipesToRemove = safeIndexSet.map { recipes[$0] }
         
         // Remove from memory
-        recipes.remove(atOffsets: indexSet)
+        recipes.remove(atOffsets: safeIndexSet)
         
-        // Remove from CoreData
-        let context = CoreDataManager.shared.persistentContainer.viewContext
-        
-        for recipe in recipesToRemove {
-            // Find the corresponding CoreData object
-            let fetchRequest: NSFetchRequest<CDRecipe> = CDRecipe.fetchRequest()
-            fetchRequest.predicate = NSPredicate(format: "id == %@", recipe.id as CVarArg)
+        // Edge case: If this was the last recipe, also clear the cache
+        if recipes.isEmpty {
+            print("🧹 Removed last recipe, clearing caches")
+            clearCaches()
             
-            do {
-                let results = try context.fetch(fetchRequest)
-                for cdRecipe in results {
-                    context.delete(cdRecipe)
+            // Consider reloading defaults if needed
+            if UserDefaults.standard.bool(forKey: "shouldLoadDefaultsOnEmpty") {
+                print("⚙️ Reloading defaults as configured in settings")
+                ensureInitialDataLoaded()
+            }
+        }
+        
+        // Remove from CoreData with better error handling
+        CoreDataManager.shared.performBackgroundTask { context in
+            var errorOccurred = false
+            
+            for recipe in recipesToRemove {
+                // Find the corresponding CoreData object
+                let fetchRequest: NSFetchRequest<CDRecipe> = CDRecipe.fetchRequest()
+                fetchRequest.predicate = NSPredicate(format: "id == %@", recipe.id as CVarArg)
+                
+                do {
+                    let results = try context.fetch(fetchRequest)
+                    for cdRecipe in results {
+                        context.delete(cdRecipe)
+                    }
+                } catch {
+                    errorOccurred = true
+                    print("❌ Failed to delete recipe from CoreData: \(error)")
                 }
-                try context.save()
-            } catch {
-                print("❌ Failed to delete recipe from CoreData: \(error)")
+            }
+            
+            // Only try to save if we haven't encountered errors
+            if !errorOccurred {
+                do {
+                    try context.save()
+                    print("✅ Successfully deleted \(recipesToRemove.count) recipes from CoreData")
+                    
+                    // Update UserDefaults with new count
+                    DispatchQueue.main.async {
+                        UserDefaults.standard.set(self.recipes.count, forKey: "totalRecipeCount")
+                    }
+                    
+                } catch {
+                    print("❌ Failed to save context after deletion: \(error)")
+                }
             }
         }
         
@@ -121,6 +163,10 @@ class RecipeListViewModel: ObservableObject {
             if !cdRecipes.isEmpty {
                 // Convert CoreData recipes to our model
                 self.recipes = cdRecipes.map { Recipe.fromCoreData($0) }
+                
+                // Validate and fix image references
+                validateRecipeImages()
+                
                 print("📦 Loaded \(self.recipes.count) recipes from CoreData")
                 self.isLoading = false
                 return
@@ -158,6 +204,63 @@ class RecipeListViewModel: ObservableObject {
         
         print("📝 Loaded default sample recipe")
         self.isLoading = false
+    }
+    
+    // Validate recipe image references to ensure they're valid
+    private func validateRecipeImages() {
+        for i in 0..<recipes.count {
+            guard let imageName = recipes[i].imageName else { continue }
+            
+            // Check if image exists in bundle
+            if UIImage(named: imageName) != nil {
+                // Valid bundle image, no action needed
+                continue
+            }
+            
+            // Check if URL is valid
+            if let url = URL(string: imageName), (url.scheme == "http" || url.scheme == "https") {
+                // Valid URL, but we'll check if it exists in the cache
+                if let diskCachePath = ImageLoader.shared.getCachePathForKey(imageName),
+                   FileManager.default.fileExists(atPath: diskCachePath.path) {
+                    // Image exists in disk cache, no action needed
+                    continue
+                }
+                
+                // URL is valid but not cached, we'll keep it for normal loading
+                continue
+            }
+            
+            // Check if it's a file path that exists
+            if let url = URL(string: imageName), FileManager.default.fileExists(atPath: url.path) {
+                // Valid file path, no action needed
+                continue
+            }
+            
+            // If we got here, the image reference is invalid; use a category-based fallback
+            print("⚠️ Invalid image reference detected: \(imageName). Using category fallback.")
+            recipes[i].imageName = getCategoryPlaceholderImage(for: recipes[i].category)
+        }
+        
+        // After validation, update CoreData if needed
+        saveRecipes()
+    }
+    
+    // Get a category-appropriate placeholder image name
+    private func getCategoryPlaceholderImage(for category: RecipeCategory) -> String {
+        switch category {
+        case .breakfast: return "breakfast"
+        case .lunch: return "lunch"
+        case .dinner: return "dinner"
+        case .dessert: return "dessert"
+        case .appetizer: return "appetizer"
+        case .salad: return "salad"
+        case .soup: return "soup"
+        case .mainCourse: return "main-course"
+        case .sideDish: return "side-dish"
+        case .beverage: return "beverage"
+        case .snack: return "snack"
+        case .other: return "recipe-placeholder"
+        }
     }
     
     // MARK: - Recipe Filtering & Searching

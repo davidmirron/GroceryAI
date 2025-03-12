@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 // Enhanced Quick Add Row for better usability
 struct QuickAddRow: View {

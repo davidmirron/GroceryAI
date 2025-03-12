@@ -1,6 +1,7 @@
 import Foundation
 import Combine
 import SwiftUI
+import UIKit
 
 class RecipesViewModel: ObservableObject {
     @Published var recipes: [Recipe] = []
@@ -9,7 +10,8 @@ class RecipesViewModel: ObservableObject {
     @Published var selectedFilter: RecipeFilter = .all
     
     // Use an injected RecipeListViewModel instead of creating our own
-    private var recipeListViewModel: RecipeListViewModel
+    // Make accessible for recipe deletion
+    public var recipeListViewModel: RecipeListViewModel
     
     // Add ShoppingListViewModel as a dependency
     private var shoppingListViewModel: ShoppingListViewModel
@@ -49,15 +51,16 @@ class RecipesViewModel: ObservableObject {
             return markedCustomRecipes
         }
         
-        // Otherwise fall back to checking against RecipeListViewModel
-        let customFromList = recipeListViewModel.recipes.filter { $0.isCustomRecipe }
-        if !customFromList.isEmpty {
-            return customFromList
+        // Check in RecipeListViewModel for saved recipes (these are the user's saved recipes)
+        // This is the primary source of truth for user's recipes
+        let savedRecipes = recipeListViewModel.recipes
+        if !savedRecipes.isEmpty {
+            return savedRecipes
         }
         
-        // Final fallback: identify custom recipes as those not in defaults
-        let defaultRecipeNames = getDefaultRecipes().map { $0.name }
-        return recipeListViewModel.recipes.filter { !defaultRecipeNames.contains($0.name) }
+        // We shouldn't reach this point, but as a fallback return an empty array
+        // rather than trying to guess which recipes might be custom
+        return []
     }
     
     /// Returns filtered recipes based on the selected filter
@@ -321,10 +324,22 @@ class RecipesViewModel: ObservableObject {
                 servings: recipe.servings,
                 nutritionalInfo: recipe.nutritionalInfo,
                 dietaryTags: recipe.dietaryTags,
-                imageName: recipe.imageName
+                imageName: recipe.imageName,
+                isCustomRecipe: true, // Make sure to mark as a custom recipe
+                category: recipe.category,
+                difficulty: recipe.difficulty,
+                prepTime: recipe.prepTime,
+                cookTime: recipe.cookTime,
+                source: recipe.source
             )
             
             recipeListViewModel.addRecipe(cleanRecipe)
+            
+            // Force a refresh of the recipes to update the UI
+            // This ensures the saved recipe will appear in the My Recipes section
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                self.refreshRecipes()
+            }
         }
     }
     
@@ -649,7 +664,7 @@ class RecipesViewModel: ObservableObject {
     
     // MARK: - Custom Recipe Management
     func addCustomRecipeAndRefresh(_ recipe: Recipe) {
-        // Create a clean copy with isCustomRecipe set to true
+        // Make sure the recipe is marked as a custom recipe
         let customRecipe = Recipe(
             id: recipe.id,
             name: recipe.name,
@@ -660,26 +675,19 @@ class RecipesViewModel: ObservableObject {
             nutritionalInfo: recipe.nutritionalInfo,
             dietaryTags: recipe.dietaryTags,
             imageName: recipe.imageName,
-            matchScore: 0.95, // High match score for user's own recipes
-            isCustomRecipe: true // Explicitly mark as custom
+            isCustomRecipe: true,
+            category: recipe.category,
+            difficulty: recipe.difficulty,
+            prepTime: recipe.prepTime,
+            cookTime: recipe.cookTime,
+            source: recipe.source
         )
         
-        // 1. Add to recipe list for persistence
+        // Add to recipe list
         recipeListViewModel.addRecipe(customRecipe)
         
-        // 2. Remove if already in the suggestions list
-        if let index = recipes.firstIndex(where: { $0.id == customRecipe.id }) {
-            recipes.remove(at: index)
-        }
-        
-        // 3. Insert at the top of suggestions
-        recipes.insert(customRecipe, at: 0)
-        
-        // 4. Trigger UI update
-        objectWillChange.send()
-        
-        // 5. Debug output
-        print("Added custom recipe: \(customRecipe.name), isCustom: \(customRecipe.isCustomRecipe)")
+        // Refresh recipes to update UI
+        refreshRecipes()
     }
     
     // MARK: - Recipe Discovery Features

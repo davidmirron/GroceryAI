@@ -125,6 +125,38 @@ struct AppTheme {
         Color.yellow
     }
     
+    // MARK: - Destructive Color
+    static var destructive: Color {
+        Color(UIColor { $0.userInterfaceStyle == .dark ? 
+              UIColor(hex: "#FF6B6B") : // Softer red for dark mode
+              UIColor(hex: "#FF3B30")   // Standard red for light mode
+        })
+    }
+    
+    // MARK: - Secondary Text Color
+    static var secondaryText: Color {
+        Color(UIColor { $0.userInterfaceStyle == .dark ? 
+              UIColor(hex: "#9CA3AF") : // Dark secondary text
+              UIColor(hex: "#6B7280")   // Light secondary text
+        })
+    }
+    
+    // MARK: - Shadow Properties
+    static var shadowColor: Color {
+        Color(UIColor { $0.userInterfaceStyle == .dark ? 
+              UIColor(red: 0, green: 0, blue: 0, alpha: 0.25) :
+              UIColor(red: 0, green: 0, blue: 0, alpha: 0.1)
+        })
+    }
+    
+    static var shadowRadius: CGFloat = 3
+    static var shadowOffsetY: CGFloat = 2
+    static var shadowOffsetX: CGFloat = 0
+    
+    // MARK: - Animation Constants
+    static var defaultAnimationDuration: Double = 0.3
+    static var defaultSpringDamping: Double = 0.7
+    
     // MARK: - Recipe Match Colors
     static var highMatchColor: Color {
         Color(UIColor { $0.userInterfaceStyle == .dark ? 
@@ -265,6 +297,61 @@ struct AppTheme {
               UIColor(white: 1, alpha: 0.1) : // Subtle white border for dark mode
               UIColor(white: 0, alpha: 0.1)   // Subtle black border for light mode
         })
+    }
+
+    // MARK: - Meal Type Colors
+    // Consistent semantic meal type colors that adapt to dark/light mode
+    static var breakfastColor: Color {
+        Color(UIColor { $0.userInterfaceStyle == .dark ? 
+              UIColor(hex: "#FDBA74") : // Breakfast color for dark mode
+              UIColor(hex: "#F97316")   // Breakfast color for light mode
+        })
+    }
+    
+    static var lunchColor: Color {
+        Color(UIColor { $0.userInterfaceStyle == .dark ? 
+              UIColor(hex: "#60A5FA") : // Lunch color for dark mode
+              UIColor(hex: "#3B82F6")   // Lunch color for light mode
+        })
+    }
+    
+    static var dinnerColor: Color {
+        Color(UIColor { $0.userInterfaceStyle == .dark ? 
+              UIColor(hex: "#C084FC") : // Dinner color for dark mode
+              UIColor(hex: "#8B5CF6")   // Dinner color for light mode
+        })
+    }
+    
+    static var snackColor: Color {
+        Color(UIColor { $0.userInterfaceStyle == .dark ? 
+              UIColor(hex: "#4ADE80") : // Snack color for dark mode
+              UIColor(hex: "#10B981")   // Snack color for light mode
+        })
+    }
+    
+    // Accent color - derived from secondary
+    static var accent: Color {
+        Color(UIColor { $0.userInterfaceStyle == .dark ? 
+              UIColor(hex: "#F59E0B") : // Amber in dark mode
+              UIColor(hex: "#F97316")   // Orange in light mode
+        })
+    }
+    
+    // Meal type categorization colors - match with the meal type colors
+    static var mealTypeBreakfast: Color {
+        breakfastColor
+    }
+    
+    static var mealTypeLunch: Color {
+        lunchColor
+    }
+    
+    static var mealTypeDinner: Color {
+        dinnerColor
+    }
+    
+    static var mealTypeSnack: Color {
+        snackColor
     }
 }
 
