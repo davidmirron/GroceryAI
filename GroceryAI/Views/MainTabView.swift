@@ -63,7 +63,7 @@ struct MainTabView: View {
                 AIChatView()
             }
             .tabItem {
-                Label("AI Chef", systemImage: "camera")
+                Label("AI Chef", systemImage: "sparkle.magnifyingglass")
             }
             .tag(3)
         }
@@ -75,6 +75,18 @@ struct MainTabView: View {
             
             UITabBar.appearance().standardAppearance = appearance
             UITabBar.appearance().scrollEdgeAppearance = appearance
+            
+            // Custom styling to subtly highlight the AI Chef tab
+            if let iconView = UITabBar.appearance().items?[3].value(forKey: "_view") as? UIView {
+                for case let imageView as UIImageView in iconView.subviews {
+                    imageView.contentMode = .center
+                    imageView.layer.shadowColor = UIColor(AppTheme.accentTeal).cgColor
+                    imageView.layer.shadowRadius = 4.0
+                    imageView.layer.shadowOpacity = 0.6
+                    imageView.layer.shadowOffset = CGSize(width: 0, height: 0)
+                    imageView.layer.masksToBounds = false
+                }
+            }
         }
         .environmentObject(shoppingListViewModel)
         .environmentObject(mealPlanViewModel)
