@@ -6,11 +6,6 @@
 	objectVersion = 77;
 	objects = {
 
-/* Begin PBXBuildFile section */
-		5E480F312D81B9320012C919 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 5E480F302D81B9320012C919 /* FirebaseAnalytics */; };
-		5E480F342D81BD4F0012C919 /* FirebaseAnalyticsOnDeviceConversion in Frameworks */ = {isa = PBXBuildFile; productRef = 5E480F332D81BD4F0012C919 /* FirebaseAnalyticsOnDeviceConversion */; };
-/* End PBXBuildFile section */
-
 /* Begin PBXContainerItemProxy section */
 		5E9806C52D722E95008F48B0 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -57,8 +52,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5E480F312D81B9320012C919 /* FirebaseAnalytics in Frameworks */,
-				5E480F342D81BD4F0012C919 /* FirebaseAnalyticsOnDeviceConversion in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -127,8 +120,6 @@
 			);
 			name = GroceryAI;
 			packageProductDependencies = (
-				5E480F302D81B9320012C919 /* FirebaseAnalytics */,
-				5E480F332D81BD4F0012C919 /* FirebaseAnalyticsOnDeviceConversion */,
 			);
 			productName = GroceryAI;
 			productReference = 5E9806B42D722E93008F48B0 /* GroceryAI.app */;
@@ -585,19 +576,6 @@
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		5E480F302D81B9320012C919 /* FirebaseAnalytics */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 5E480F2F2D81B75C0012C919 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseAnalytics;
-		};
-		5E480F332D81BD4F0012C919 /* FirebaseAnalyticsOnDeviceConversion */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 5E480F2F2D81B75C0012C919 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseAnalyticsOnDeviceConversion;
-		};
-/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 5E9806AC2D722E93008F48B0 /* Project object */;
 }

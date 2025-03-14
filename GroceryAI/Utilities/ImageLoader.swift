@@ -21,11 +21,13 @@ class ImageLoader: ObservableObject {
     @Published private(set) var isExpensiveConnection = false
     
     private var cancellables = Set<AnyCancellable>()
+    private let cancellablesLock = NSLock() // Lock for thread-safe access to cancellables
     private let defaultPlaceholder: String
     private var categoryImageMap: [RecipeCategory: String] = [:]
     
     // Image download operations
     private var downloadTasks: [String: URLSessionDataTask] = [:]
+    private let taskQueue = DispatchQueue(label: "com.groceryai.imageloader.tasks", attributes: .concurrent)
     
     // Image size optimization settings
     private let standardImageSize = CGSize(width: 600, height: 400)
@@ -314,55 +316,60 @@ class ImageLoader: ObservableObject {
     
     // Download image from network with specified priority
     private func loadImageFromURL(_ url: URL, withKey key: String, qos: DispatchQoS.QoSClass = .utility, completion: @escaping (UIImage?) -> Void) {
-        // Cancel any existing task for this URL
-        if let existingTask = downloadTasks[key] {
-            existingTask.cancel()
-            downloadTasks.removeValue(forKey: key)
-        }
-        
-        // Configure the URLSession with appropriate priority
-        let config = URLSessionConfiguration.default
-        config.requestCachePolicy = .returnCacheDataElseLoad
-        
-        // Set timeout based on connection quality
-        if isExpensiveConnection {
-            config.timeoutIntervalForRequest = 15 // Shorter timeout for cellular
-        } else {
-            config.timeoutIntervalForRequest = 30 // Longer timeout for WiFi
-        }
-        
-        // Create and configure URLSession
-        let session = URLSession(configuration: config)
-        
-        // Create a new download task
-        let task = session.dataTask(with: url) { [weak self] data, response, error in
-            // Remove task from tracking
-            self?.downloadTasks.removeValue(forKey: key)
+        // Use a thread-safe approach to manage the downloadTasks dictionary
+        taskQueue.sync(flags: .barrier) { [self] in
+            // Cancel any existing task for this URL
+            if let existingTask = downloadTasks[key] {
+                existingTask.cancel()
+                downloadTasks.removeValue(forKey: key)
+            }
             
-            // Check for errors
-            guard error == nil,
-                  let httpResponse = response as? HTTPURLResponse,
-                  httpResponse.statusCode == 200,
-                  let data = data,
-                  let image = UIImage(data: data) else {
-                DispatchQueue.main.async {
-                    print("❌ Failed to load image from URL: \(url.absoluteString)")
-                    completion(nil)
+            // Configure the URLSession with appropriate priority
+            let config = URLSessionConfiguration.default
+            config.requestCachePolicy = .returnCacheDataElseLoad
+            
+            // Set timeout based on connection quality
+            if isExpensiveConnection {
+                config.timeoutIntervalForRequest = 15 // Shorter timeout for cellular
+            } else {
+                config.timeoutIntervalForRequest = 30 // Longer timeout for WiFi
+            }
+            
+            // Create and configure URLSession
+            let session = URLSession(configuration: config)
+            
+            // Create a new download task
+            let task = session.dataTask(with: url) { [weak self] data, response, error in
+                // Remove task from tracking in a thread-safe way
+                self?.taskQueue.async(flags: .barrier) {
+                    self?.downloadTasks.removeValue(forKey: key)
                 }
-                return
+                
+                // Check for errors
+                guard error == nil,
+                      let httpResponse = response as? HTTPURLResponse,
+                      httpResponse.statusCode == 200,
+                      let data = data,
+                      let image = UIImage(data: data) else {
+                    DispatchQueue.main.async {
+                        print("❌ Failed to load image from URL: \(url.absoluteString)")
+                        completion(nil)
+                    }
+                    return
+                }
+                
+                DispatchQueue.main.async {
+                    completion(image)
+                }
             }
             
-            DispatchQueue.main.async {
-                completion(image)
-            }
+            // Set task priority based on QoS
+            task.priority = qos == .userInitiated ? URLSessionTask.highPriority : URLSessionTask.defaultPriority
+            
+            // Store and start the task
+            downloadTasks[key] = task
+            task.resume()
         }
-        
-        // Set task priority based on QoS
-        task.priority = qos == .userInitiated ? URLSessionTask.highPriority : URLSessionTask.defaultPriority
-        
-        // Store and start the task
-        downloadTasks[key] = task
-        task.resume()
     }
     
     // Modify URL to request a smaller image if on cellular network
@@ -414,13 +421,23 @@ class ImageLoader: ObservableObject {
                     
                     // Clean up the cancellable
                     cancellable?.cancel()
+                    
+                    // Thread-safe removal from cancellables set if needed
+                    if let cancellableToRemove = cancellable, let self = self {
+                        self.cancellablesLock.lock()
+                        self.cancellables.remove(cancellableToRemove)
+                        self.cancellablesLock.unlock()
+                    }
+                    
                     cancellable = nil
                 }
             }
         
-        // Store the cancellable to prevent it from being deallocated
-        if let cancellable = cancellable {
-            cancellables.insert(cancellable)
+        // Store the cancellable to prevent it from being deallocated in a thread-safe way
+        if let cancellableToStore = cancellable {
+            cancellablesLock.lock()
+            cancellables.insert(cancellableToStore)
+            cancellablesLock.unlock()
         }
     }
     
@@ -814,17 +831,24 @@ class ImageLoader: ObservableObject {
             return
         }
         
-        // If there's an active download task for this image, update its priority
-        if let existingTask = downloadTasks[imageName] {
-            // Cancel the existing task if it's not high priority but should be
-            if highPriority && existingTask.priority == URLSessionTask.defaultPriority {
-                existingTask.cancel()
-                downloadTasks.removeValue(forKey: imageName)
-                
-                // Request the image again with high priority
-                loadImage(named: imageName, highPriority: true) { _ in }
+        // Access downloadTasks in a thread-safe manner
+        taskQueue.sync { [self] in
+            // If there's an active download task for this image, update its priority
+            if let existingTask = downloadTasks[imageName] {
+                // Cancel the existing task if it's not high priority but should be
+                if highPriority && existingTask.priority == URLSessionTask.defaultPriority {
+                    existingTask.cancel()
+                    
+                    // Remove from dictionary using barrier flag for thread safety
+                    taskQueue.async(flags: .barrier) {
+                        self.downloadTasks.removeValue(forKey: imageName)
+                    }
+                    
+                    // Request the image again with high priority
+                    loadImage(named: imageName, highPriority: true) { _ in }
+                }
+                // If it's already high priority, we don't need to downgrade it
             }
-            // If it's already high priority, we don't need to downgrade it
         }
     }
 }
