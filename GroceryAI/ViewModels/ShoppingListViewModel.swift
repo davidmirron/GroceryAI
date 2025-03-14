@@ -425,6 +425,31 @@ class ShoppingListViewModel: ObservableObject {
         addItem(ingredient)
     }
     
+    // Overload for adding items from recipes with string-based parameters
+    func addItem(name: String, 
+                 quantity: Double,
+                 unit: String, 
+                 category: String,
+                 recipe: String? = nil) {
+        
+        // Convert string parameters to enums
+        let unitEnum = IngredientUnit(rawValue: unit) ?? .pieces
+        let categoryEnum = IngredientCategory(rawValue: category) ?? .other
+        
+        // Create the ingredient
+        let ingredient = Ingredient(
+            id: UUID(),
+            name: name,
+            amount: quantity,
+            unit: unitEnum,
+            category: categoryEnum,
+            notes: recipe != nil ? "From recipe: \(recipe!)" : nil
+        )
+        
+        // Add to shopping list
+        addItem(ingredient)
+    }
+    
     // Clear the entire shopping list
     func clearList() {
         items.removeAll()

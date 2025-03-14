@@ -269,9 +269,13 @@ class RecipesViewModel: ObservableObject {
                     let totalIngredients = recipe.ingredients.count
                     let matchScore = totalIngredients > 0 ? Double(matchedIngredientCount) / Double(totalIngredients) : 0.0
                     
-                    // Boost match score slightly to make UI look better
-                    // This helps prevent too many recipes showing very low scores
-                    let adjustedMatchScore = min(1.0, matchScore * 1.2)
+                    // Boost match score slightly to make UI look better, but preserve exact 100% matches
+                    let adjustedMatchScore: Double
+                    if matchScore >= 1.0 {
+                        adjustedMatchScore = 1.0  // Keep perfect matches at exactly 1.0
+                    } else {
+                        adjustedMatchScore = min(0.99, matchScore * 1.2)  // Boost non-perfect matches, but cap at 99%
+                    }
                     
                     // Create a copy of the recipe with updated missing ingredients and match score
                     let recipeCopy = Recipe(

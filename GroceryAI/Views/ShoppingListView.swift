@@ -531,7 +531,13 @@ struct ShoppingListView: View {
     // Recipe match card that doesn't modify state during view updates
     private func recipeMatchCard(recipe: Recipe) -> some View {
         // All values are calculated from the recipe parameter without modifying state
-        let matchPercentage = Int(recipe.matchScore * 100)
+        let matchPercentage: Int
+        if recipe.matchScore >= 0.999 { // Account for floating point precision
+            matchPercentage = 100
+        } else {
+            matchPercentage = Int(recipe.matchScore * 100)
+        }
+        
         let missingIngredients = recipe.missingIngredients
         
         return Button {

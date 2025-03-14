@@ -7,9 +7,22 @@
 
 import SwiftUI
 import CoreData
+import FirebaseCore
+
+
+class AppDelegate: NSObject, UIApplicationDelegate {
+  func application(_ application: UIApplication,
+                   didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
+    FirebaseApp.configure()
+
+    return true
+  }
+}
+
 
 @main
 struct GroceryAIApp: App {
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     @AppStorage("hasSeenOnboarding") private var hasSeenOnboarding: Bool = false
     @State private var showOnboarding = false
     @Environment(\.scenePhase) private var scenePhase

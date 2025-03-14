@@ -19,8 +19,8 @@ struct MainTabView: View {
         let shoppingListVM = ShoppingListViewModel()
         _shoppingListViewModel = StateObject(wrappedValue: shoppingListVM)
         
-        // Initialize meal plan view model with the dependencies
-        _mealPlanViewModel = StateObject(wrappedValue: MealPlanViewModel())
+        // Initialize meal plan view model with the shopping list dependency
+        _mealPlanViewModel = StateObject(wrappedValue: MealPlanViewModel(shoppingListViewModel: shoppingListVM))
     }
     
     var body: some View {

@@ -35,7 +35,7 @@ struct AddMealView: View {
     }
     
     // Filtered recipes based on search text
-    private var filteredRecipes: [ViewRecipe] {
+    private var filteredRecipes: [Recipe] {
         if searchText.isEmpty {
             return viewModel.recipes
         } else {
@@ -46,7 +46,7 @@ struct AddMealView: View {
     }
     
     // Quick suggestions based on meal type
-    private var quickSuggestions: [ViewRecipe] {
+    private var quickSuggestions: [Recipe] {
         viewModel.suggestedRecipe(for: mealType, limit: 4)
     }
     
@@ -399,7 +399,7 @@ struct AddMealView: View {
         .animation(.spring(response: 0.3), value: searchText)
     }
     
-    private func suggestionCard(for recipe: ViewRecipe) -> some View {
+    private func suggestionCard(for recipe: Recipe) -> some View {
         VStack(alignment: .leading) {
             // Image or placeholder
             RoundedRectangle(cornerRadius: 8)
@@ -428,7 +428,7 @@ struct AddMealView: View {
         }
     }
     
-    private func recipeRow(for recipe: ViewRecipe) -> some View {
+    private func recipeRow(for recipe: Recipe) -> some View {
         HStack(spacing: 12) {
             // Image or placeholder
             RoundedRectangle(cornerRadius: 8)
@@ -498,14 +498,14 @@ struct AddMealView: View {
     
     // MARK: - Actions
     
-    private func addRecipeToMealPlan(_ recipe: ViewRecipe) {
+    private func addRecipeToMealPlan(_ recipe: Recipe) {
         // Create a new meal from the recipe
         let meal = Meal(
             id: UUID(),
             name: recipe.name,
             recipeId: recipe.id,
             date: date,
-            calories: recipe.calories,
+            calories: recipe.nutritionalInfo?.calories,
             mealType: mealType,
             emoji: nil
         )
@@ -518,7 +518,7 @@ struct AddMealView: View {
             let generator = UINotificationFeedbackGenerator()
             generator.notificationOccurred(.success)
             
-            // Dismiss the sheet
+            // Dismiss sheet
             presentationMode.wrappedValue.dismiss()
         }
     }

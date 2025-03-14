@@ -17,6 +17,11 @@ class IngredientMatcher {
         let matchedIngredients = requiredIngredients.intersection(availableIngredients)
         let matchScore = Double(matchedIngredients.count) / Double(requiredIngredients.count)
         
+        // For perfect matches (100%), preserve the exact score
+        if matchedIngredients.count == requiredIngredients.count {
+            return 1.0
+        }
+        
         // Bonus points for using more of the available ingredients
         let utilizationScore = Double(matchedIngredients.count) / Double(availableIngredients.count)
         

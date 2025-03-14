@@ -75,11 +75,11 @@ struct MealTimeSectionView: View {
     private var mealsListView: some View {
         VStack(spacing: 12) {
             ForEach(meals) { meal in
-                MealRowView(meal: meal) {
+                MealRowView(meal: meal, onDelete: {
                     withAnimation(.spring(response: 0.3)) {
                         viewModel.removeMeal(meal)
                     }
-                }
+                }, viewModel: viewModel)
             }
         }
         .transition(.opacity.combined(with: .move(edge: .top)))

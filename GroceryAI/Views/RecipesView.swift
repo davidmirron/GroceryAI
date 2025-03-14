@@ -1106,7 +1106,14 @@ struct RecipesView: View {
     
     // Enhanced recipe card with improved design and functionality
     private func enhancedRecipeCard(recipe: Recipe) -> some View {
-        let matchPercentage = Int(recipe.matchScore * 100)
+        // Calculate match percentage - ensure exact 100% matches are displayed as 100%
+        let matchPercentage: Int
+        if recipe.matchScore >= 0.999 { // Account for floating point precision
+            matchPercentage = 100
+        } else {
+            matchPercentage = Int(recipe.matchScore * 100)
+        }
+        
         let matchColor: Color = matchPercentage >= 90 ? AppTheme.highMatchColor :
                                matchPercentage >= 60 ? AppTheme.mediumMatchColor : AppTheme.lowMatchColor
         
@@ -1182,18 +1189,23 @@ struct RecipesView: View {
                                     .fontWeight(.semibold)
                                     .foregroundColor(matchColor)
                     
-                                // Progress bar (simplified)
-                                ZStack(alignment: .leading) {
-                                    Rectangle()
-                                        .fill(Color(.systemGray5))
-                                        .frame(height: 4)
-                                        .cornerRadius(2)
-                            
-                                    Rectangle()
-                                        .fill(matchColor)
-                                        .frame(width: CGFloat(recipe.matchScore) * 200, height: 4)
-                                        .cornerRadius(2)
+                                // Progress bar with GeometryReader to get the actual container width
+                                GeometryReader { geometry in
+                                    ZStack(alignment: .leading) {
+                                        // Background track
+                                        Rectangle()
+                                            .fill(Color(.systemGray5))
+                                            .frame(height: 4)
+                                            .cornerRadius(2)
+                                
+                                        // Filled track - use the actual width of the container
+                                        Rectangle()
+                                            .fill(matchColor)
+                                            .frame(width: CGFloat(recipe.matchScore) * geometry.size.width, height: 4)
+                                            .cornerRadius(2)
+                                    }
                                 }
+                                .frame(height: 4) // Constrain the height
                             }
                             
                             // Missing ingredients information

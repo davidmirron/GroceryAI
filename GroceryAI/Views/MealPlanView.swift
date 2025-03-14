@@ -58,15 +58,15 @@ extension TimeInterval {
     }
 }
 
-// MARK: - ViewRecipe Helper Extensions
-extension ViewRecipe {
+// MARK: - Recipe Helper Extensions
+extension Recipe {
     var estimatedTimeString: String {
-        let timeInSeconds = TimeInterval((prepTime ?? 0) * 60)
-        return timeInSeconds.formattedTimeString
+        // Use prepTime directly which is already in seconds
+        return prepTime.formattedTimeString
     }
     
     var difficultyText: String {
-        return "Medium" // Default value since ViewRecipe doesn't have difficulty
+        return difficulty.rawValue
     }
 }
 
@@ -76,7 +76,26 @@ extension ViewRecipe {
 /// - Optimized rendering with minimal state
 /// - Proper animations for state changes
 struct MealPlanView: View {
-    @StateObject private var viewModel = MealPlanViewModel()
+    // Local or injected ViewModel
+    @StateObject private var localViewModel = MealPlanViewModel()
+    
+    // Environment object for when used within MainTabView
+    @EnvironmentObject private var envViewModel: MealPlanViewModel
+    
+    // Computed property to use the appropriate view model
+    private var viewModel: MealPlanViewModel {
+        if ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1" {
+            // In preview, use the local view model
+            return localViewModel
+            } else {
+            // In the app, check for environment
+            return environmentObjectAvailable ? envViewModel : localViewModel
+        }
+    }
+    
+    // Detect if the environment object is available
+    @State private var environmentObjectAvailable = false
+    
     @State private var selectedDate = Date()
     @State private var weekStartDate: Date = {
         let date = Date()
@@ -87,6 +106,13 @@ struct MealPlanView: View {
     @State private var showingActionFeedback = false
     @State private var actionFeedbackText = ""
     @State private var selectionKey = UUID() // For preserving selection state
+    
+    // Initialize the view model with a shopping list view model
+    init(shoppingListViewModel: ShoppingListViewModel? = nil) {
+        if let shoppingListVM = shoppingListViewModel {
+            self._localViewModel = StateObject(wrappedValue: MealPlanViewModel(shoppingListViewModel: shoppingListVM))
+        }
+    }
     
     // Get the user's calendar
     private var calendar: Calendar {
@@ -143,7 +169,7 @@ struct MealPlanView: View {
                 // Feedback toast
                 if showingActionFeedback {
                     VStack {
-                        Spacer()
+                Spacer()
                         Text(actionFeedbackText)
                             .font(.subheadline.bold())
                             .foregroundColor(.white)
@@ -172,8 +198,8 @@ struct MealPlanView: View {
                                 .tint(AppTheme.primary)
                             
                             Text("Generating meal plan...")
-                                .font(.headline)
-                                .foregroundColor(AppTheme.text)
+                        .font(.headline)
+                        .foregroundColor(AppTheme.text)
                         }
                         .padding(24)
                         .background(
@@ -205,7 +231,36 @@ struct MealPlanView: View {
                 }
             }
             .onAppear {
+                // Check if environment object is available
+                let mirror = Mirror(reflecting: self)
+                environmentObjectAvailable = mirror.children.contains { child in
+                    return child.label == "_envViewModel"
+                }
                 viewModel.loadData()
+            }
+            .overlay(alignment: .bottom) {
+                // Shopping List Feedback Toast
+                if let feedback = viewModel.shoppingListFeedback {
+                    VStack {
+                        Text(feedback.title)
+                            .font(.headline)
+                            .foregroundColor(.white)
+                        
+                        Text(feedback.message)
+                            .font(.subheadline)
+                            .foregroundColor(.white.opacity(0.9))
+                    }
+                    .padding()
+                    .background(
+                        RoundedRectangle(cornerRadius: 16)
+                            .fill(AppTheme.primary.opacity(0.9))
+                            .shadow(color: Color.black.opacity(0.2), radius: 10, x: 0, y: 5)
+                    )
+                    .padding(.horizontal, 24)
+                    .padding(.bottom, 32)
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                    .animation(.spring(response: 0.3), value: viewModel.shoppingListFeedback != nil)
+                }
             }
             // Save state when app moves to background
             .onReceive(NotificationCenter.default.publisher(for: UIApplication.willResignActiveNotification)) { _ in
@@ -248,9 +303,9 @@ struct MealPlanView: View {
                     .font(.headline)
                     .foregroundColor(AppTheme.text)
             }
-            
-            Spacer()
-            
+                
+                Spacer()
+                
             Button {
                 withAnimation(.spring(response: 0.3)) {
                     weekStartDate = calendar.date(byAdding: .weekOfYear, value: 1, to: weekStartDate)!
@@ -418,5 +473,8 @@ struct MealPlanView: View {
 
 // MARK: - Preview
 #Preview {
-    MealPlanView()
+    // Create a ShoppingListViewModel for the preview
+    let shoppingListViewModel = ShoppingListViewModel()
+    
+    return MealPlanView(shoppingListViewModel: shoppingListViewModel)
 }
